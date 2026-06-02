@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* surfaces */
+  --bg: #ffffff;
+  --soft: #fbfbfd;
+  --ink: #0a0a0b;
+  --ink-2: #52525b;
+  --ink-3: #9a9aa5;
+  --line: #ececf1;
+  --line-2: #dcdce4;
+
+  /* accents */
+  --accent: #00b87a;
+  --accent-cyan: #06b6d4;
+  --accent-blue: #2b7fff;
+  --accent-purple: #8b5cf6;
+  --accent-pink: #ff4d8d;
+  --accent-amber: #ff9f1c;
+
+  /* gradients */
+  --grad: linear-gradient(115deg, var(--accent), var(--accent-cyan), var(--accent-blue), var(--accent-purple));
+  --grad-text: linear-gradient(100deg, var(--accent), var(--accent-cyan) 38%, var(--accent-blue) 68%, var(--accent-purple));
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; }
+html, body { padding: 0; margin: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── keyframes (shared across the app) ─────────────────────────── */
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+@keyframes gradShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes aur1 { 0%, 100% { transform: translate(-50%, -20%) scale(1); } 50% { transform: translate(-42%, -12%) scale(1.12); } }
+@keyframes aur2 { 0%, 100% { transform: translate(-50%, -20%) scale(1.05); } 50% { transform: translate(-58%, -26%) scale(0.92); } }
+@keyframes aur3 { 0%, 100% { transform: translate(-50%, -20%) scale(0.95); } 50% { transform: translate(-46%, -30%) scale(1.1); } }
+
+/* ── reusable utilities ────────────────────────────────────────── */
+.grad-text {
+  background-image: var(--grad-text);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradShift 6s linear infinite;
+}
+
+.fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 0.8s var(--ease) forwards; }
+.d1 { animation-delay: 0.08s; }
+.d2 { animation-delay: 0.16s; }
+.d3 { animation-delay: 0.24s; }
+.d4 { animation-delay: 0.32s; }
+.d5 { animation-delay: 0.40s; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-2);
+  background: var(--bg); border: 1px solid var(--line-2);
+  padding: 7px 15px; border-radius: 100px;
+  box-shadow: 0 2px 10px rgba(10, 10, 15, 0.04);
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-sans); font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+  color: #fff; text-decoration: none; border: none; cursor: pointer;
+  background-image: var(--grad); background-size: 200% 100%; background-position: 0 0;
+  border-radius: 12px; padding: 14px 30px;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: background-position 0.6s ease, transform 0.3s var(--ease), box-shadow 0.3s;
+}
+.btn-primary:hover {
+  background-position: 100% 0; transform: translateY(-2px);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 38%, transparent);
+}
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 13.5px; color: var(--ink); text-decoration: none; cursor: pointer;
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: 12px; padding: 14px 28px;
+  transition: all 0.3s var(--ease);
+}
+.btn-ghost:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(10, 10, 15, 0.1); }
+
+::selection { background: color-mix(in srgb, var(--accent) 22%, transparent); }

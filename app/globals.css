@@ -175,3 +175,8 @@ body {
 /* ── Roadmap page ──────────────────────────────────────────────── */
 .rm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; align-items: start; }
 @keyframes rmOpen { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── CTF list ──────────────────────────────────────────────────── */
+.ctf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+.ctf-row { transition: background 0.15s; }
+.ctf-row:hover { background: var(--soft); }

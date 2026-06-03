@@ -31,8 +31,8 @@ const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_
 async function fetchFeed(feed: (typeof FEEDS)[number]): Promise<TickerItem[]> {
   const res = await fetch(feed.url, {
     headers: { "User-Agent": "RECON/1.0 (security learning platform)" },
-    // 1時間キャッシュ（CISAへの負荷とビルド時間を抑える）
-    next: { revalidate: 3600 },
+    // 8時間キャッシュ = 1日3回更新相当（朝・昼・夜）。本番では cron で時刻固定する。
+    next: { revalidate: 28800 },
   });
   if (!res.ok) throw new Error(`${feed.source}: ${res.status}`);
   const xml = await res.text();
@@ -44,7 +44,7 @@ async function fetchFeed(feed: (typeof FEEDS)[number]): Promise<TickerItem[]> {
   const raw = channelItems ?? atomEntries ?? [];
   const arr = Array.isArray(raw) ? raw : [raw];
 
-  return arr.slice(0, 15).map((it: Record<string, unknown>): TickerItem => {
+  return arr.slice(0, 30).map((it: Record<string, unknown>): TickerItem => {
     const title = String(it.title && typeof it.title === "object" ? (it.title as Record<string, unknown>)["#text"] : it.title ?? "").trim();
     let link = "";
     if (typeof it.link === "string") link = it.link;
@@ -70,7 +70,7 @@ export async function GET() {
     if (items.length === 0) {
       return NextResponse.json({ ok: false, items: [], note: "no items fetched" }, { status: 200 });
     }
-    return NextResponse.json({ ok: true, items: items.slice(0, 24) }, { status: 200 });
+    return NextResponse.json({ ok: true, items: items.slice(0, 60), updatedAt: new Date().toISOString() }, { status: 200 });
   } catch (e) {
     return NextResponse.json({ ok: false, items: [], error: String(e) }, { status: 200 });
   }

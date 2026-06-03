@@ -9,6 +9,7 @@ const LINKS: [string, string][] = [
   ["/ctf", "ctf"],
   ["/tools", "tools"],
   ["/cve", "cve"],
+  ["/news", "news"],
   ["/lab", "lab"],
 ];
 

@@ -183,3 +183,6 @@ body {
 
 /* ── Tools list ────────────────────────────────────────────────── */
 .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; align-items: start; }
+
+/* ── News page ─────────────────────────────────────────────────── */
+.news-mid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-items: stretch; }

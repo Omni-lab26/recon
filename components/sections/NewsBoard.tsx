@@ -98,6 +98,7 @@ type FeedRes = { ok: boolean; items: TickerItem[]; updatedAt?: string };
 export default function NewsBoard() {
   const [data, setData] = useState<FeedRes | null>(null);
   const [failed, setFailed] = useState(false);
+  const [q, setQ] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -113,27 +114,48 @@ export default function NewsBoard() {
   }, []);
 
   const split = useMemo(() => {
-    const items = data?.items ?? [];
+    const all = data?.items ?? [];
+    const items = q
+      ? all.filter((n) => n.title.toLowerCase().includes(q.toLowerCase()) || n.source.toLowerCase().includes(q.toLowerCase()))
+      : all;
     const counts = { critical: 0, high: 0, medium: 0, info: 0 };
     items.forEach((n) => { counts[n.severity]++; });
     const hero = items.find((n) => n.severity === "critical") || items[0];
     const highs = items.filter((n) => n !== hero && n.severity === "high");
     const mediums = items.filter((n) => n.severity === "medium");
     const infos = items.filter((n) => n.severity === "info");
-    return { items, counts, hero, highs, mediums, infos };
-  }, [data]);
+    return { all, items, counts, hero, highs, mediums, infos };
+  }, [data, q]);
 
   if (!data && !failed) {
     return <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: C.ink3, padding: "40px 0", textAlign: "center" }}>// 最新の脅威情報を取得中…</div>;
   }
-  if (failed || !split.items.length) {
+  if (failed || !split.all.length) {
     return <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: C.ink3, padding: "40px 0", textAlign: "center" }}>// 最新情報を取得できませんでした（フィード元に接続できません）</div>;
   }
 
-  const { counts, hero, highs, mediums, infos } = split;
+  const { all, items, counts, hero, highs, mediums, infos } = split;
 
   return (
     <>
+      {/* search */}
+      <div style={{ marginBottom: 16 }}>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="見出し・出典でニュースを検索（例: CVE, ICS, Microsoft）"
+          style={{ width: "100%", boxSizing: "border-box", fontFamily: "var(--font-mono)", fontSize: 13, padding: "11px 14px", borderRadius: 10, border: `1px solid ${C.line2}`, background: C.bg, color: C.ink, outline: "none" }} />
+        {q && (
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3, marginTop: 8, display: "flex", justifyContent: "space-between" }}>
+            <span>「{q}」で絞り込み中: {items.length} / {all.length} 件</span>
+            <button onClick={() => setQ("")} style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.blue, background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>クリア</button>
+          </div>
+        )}
+      </div>
+
+      {items.length === 0 ? (
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: C.ink3, padding: "60px 0", textAlign: "center", border: `1px dashed ${C.line2}`, borderRadius: 14 }}>
+          // 「{q}」に該当するニュースはありません
+        </div>
+      ) : (
+      <>
       {/* today's summary */}
       <div style={{ borderRadius: 16, border: `1px solid ${C.line}`, background: C.soft, padding: "18px 20px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
@@ -208,6 +230,8 @@ export default function NewsBoard() {
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3, textAlign: "center", marginTop: 28 }}>
         // 1日3回(朝・昼・夜)更新 · 日本語要約はAIで近日対応 · 詳細は出典元(CISA公式)へ
       </div>
+      </>
+      )}
     </>
   );
 }

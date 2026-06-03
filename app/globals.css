@@ -180,3 +180,6 @@ body {
 .ctf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
 .ctf-row { transition: background 0.15s; }
 .ctf-row:hover { background: var(--soft); }
+
+/* ── Tools list ────────────────────────────────────────────────── */
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; align-items: start; }

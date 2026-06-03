@@ -12,18 +12,12 @@ export const metadata: Metadata = {
 export default function RoadmapPage() {
   return (
     <main style={{ position: "relative", minHeight: "calc(100vh - 64px)" }}>
-      {/* hero */}
-      <section style={{ textAlign: "center", padding: "60px 24px 4px", maxWidth: 880, margin: "0 auto" }}>
+      {/* label */}
+      <section style={{ maxWidth: 1180, margin: "0 auto", padding: "44px 24px 0" }}>
         <Reveal>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: C.accent, background: `${C.accent}10`, border: `1px solid ${C.accent}2e`, padding: "5px 12px", borderRadius: 100 }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accent }} />// roadmap
           </span>
-          <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: "clamp(34px, 6vw, 56px)", color: C.ink, margin: "18px 0 0", lineHeight: 1.06, letterSpacing: "-0.035em" }}>
-            どこから登っても、<span className="grad-text">頂はひとつ</span>
-          </h1>
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: 16, color: C.ink2, maxWidth: 540, margin: "16px auto 0", lineHeight: 1.6 }}>
-            各分野を、入門(L1)から到達点(L5)まで一本道で。興味のある分野から登り始めよう。
-          </p>
         </Reveal>
       </section>
 

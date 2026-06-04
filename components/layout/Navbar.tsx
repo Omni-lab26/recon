@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ReconLogo from "@/components/brand/ReconLogo";
+import AuthMenu from "@/components/layout/AuthMenu";
 
 const LINKS: [string, string][] = [
   ["/roadmap", "roadmap"],
@@ -63,9 +64,7 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-        <Link href="/signup" className="btn-primary" style={{ padding: "8px 16px", fontSize: 13, borderRadius: 9 }}>
-          今すぐ始める
-        </Link>
+        <AuthMenu />
       </div>
     </nav>
   );

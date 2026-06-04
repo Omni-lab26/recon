@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { C } from "@/lib/tokens";
 import { Reveal } from "@/components/ui/motion";
+import { createClient } from "@/lib/supabase/client";
 
 const { accent: GREEN, blue: BLUE, purple: PURPLE, pink: PINK, ink: INK, ink2: INK2, ink3: INK3, line: LINE } = C;
 
@@ -40,6 +41,15 @@ function LoopShowcase() {
 }
 
 export default function LoopCTA() {
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session?.user));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   return (
     <div style={{ position: "relative", zIndex: 2, borderTop: `1px solid ${LINE}` }}>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "104px 24px" }}>
@@ -54,14 +64,26 @@ export default function LoopCTA() {
                 相手を知り、<span className="grad-text">己を守れ。</span>
               </h2>
               <p style={{ fontFamily: "var(--font-sans)", fontSize: 16, color: INK2, maxWidth: 480, margin: "20px auto 0", lineHeight: 1.6 }}>
-                攻撃を理解し、安全な環境で試し、自分で守る。
-                <br />
-                その全部が、ここにある。
+                {signedIn
+                  ? <>今日も、一歩進もう。<br />ロードマップから、CTFから、好きなところから。</>
+                  : <>攻撃を理解し、安全な環境で試し、自分で守る。<br />その全部が、ここにある。</>}
               </p>
-              <div style={{ marginTop: 32, display: "flex", justifyContent: "center" }}>
-                <a href="/signup" className="btn-primary">無料で始める →</a>
+              <div style={{ marginTop: 32, display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+                {signedIn === null ? (
+                  // 認証状態判定中は同サイズのプレースホルダー（レイアウトずれ防止）
+                  <span style={{ height: 40, width: 200, display: "inline-block" }} aria-hidden />
+                ) : signedIn ? (
+                  <>
+                    <a href="/roadmap" className="btn-primary">ロードマップへ →</a>
+                    <a href="/ctf" className="btn-ghost">CTFに挑む</a>
+                  </>
+                ) : (
+                  <a href="/login" className="btn-primary">無料で始める →</a>
+                )}
               </div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, marginTop: 16 }}>クレジットカード不要 · いつでも解約可能</div>
+              {!signedIn && signedIn !== null && (
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, marginTop: 16 }}>メール1通でログイン · パスワード不要</div>
+              )}
             </div>
           </div>
         </Reveal>

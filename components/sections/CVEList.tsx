@@ -36,7 +36,7 @@ function CveCard({ c }: { c: CveItem }) {
   const sv = c.severity === "none" ? null : SEV[c.severity];
   const edge = sv?.c ?? C.ink3;
   return (
-    <a href={`https://nvd.nist.gov/vuln/detail/${c.id}`} target="_blank" rel="noopener noreferrer" onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
+    <a href={`/cve/${c.id}`} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
       style={{ position: "relative", display: "block", padding: "16px 16px 14px", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, textDecoration: "none", transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${edge}1f` : "0 1px 2px rgba(10,10,15,0.03)", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, gap: 8 }}>
         <CVSSBadge score={c.cvss} s={c.severity} />
@@ -175,7 +175,7 @@ export default function CVEList() {
                 <span style={{ padding: "0 8px" }}>公開日</span>
               </div>
               {filtered.map((c) => (
-                <a key={c.id} href={`https://nvd.nist.gov/vuln/detail/${c.id}`} target="_blank" rel="noopener noreferrer"
+                <a key={c.id} href={`/cve/${c.id}`}
                   style={{ display: "grid", gridTemplateColumns: "180px 70px 110px 1fr 130px 110px", padding: "13px 0", borderBottom: `1px solid ${C.line}`, alignItems: "center", textDecoration: "none", color: "inherit" }}>
                   <span style={{ ...stickyId, padding: "0 16px", fontFamily: "var(--font-mono)", fontSize: 12.5, fontWeight: 600, color: C.ink, boxShadow: `2px 0 0 ${C.line}`, display: "flex", alignItems: "center", gap: 6 }}>{c.id}{c.kev && <KevBadge small />}</span>
                   <span style={{ padding: "0 8px" }}><CVSSBadge score={c.cvss} s={c.severity} /></span>

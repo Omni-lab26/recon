@@ -65,8 +65,12 @@ export default function AuthMenu() {
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--ink-3)", marginBottom: 3, letterSpacing: 0.5 }}>SIGNED IN AS</div>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "var(--ink)", wordBreak: "break-all" }}>{email}</div>
           </div>
+          <Link href="/dashboard" onClick={() => setOpen(false)}
+            style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, textDecoration: "none", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)", marginTop: 4 }}>
+            ダッシュボード
+          </Link>
           <button onClick={onLogout}
-            style={{ width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)", marginTop: 4 }}>
+            style={{ width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)" }}>
             ログアウト
           </button>
         </div>

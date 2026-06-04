@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { TOOLS, TOOL_CATS, type ToolCatKey, type Tool } from "@/lib/tools-data";
+import { useToolFavorites } from "@/lib/use-tool-favorites";
 
 const INK = "#0a0a0b";
 const INK2 = "#52525b";
@@ -106,15 +107,7 @@ export default function ToolsList() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<"star" | "name" | "cat">("star");
   const [favOnly, setFavOnly] = useState(false);
-  const [fav, setFav] = useState<Set<string>>(new Set(["nmap"]));
-
-  const toggleFav = (id: string) =>
-    setFav((prev) => {
-      const n = new Set(prev);
-      if (n.has(id)) n.delete(id);
-      else n.add(id);
-      return n;
-    });
+  const { fav, toggleFav, signedIn } = useToolFavorites();
 
   const list = useMemo(() => {
     let r = TOOLS.filter(
@@ -147,6 +140,11 @@ export default function ToolsList() {
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", borderTop: `1px solid ${LINE}`, paddingTop: 10, flexWrap: "wrap" }}>
           <button style={pill(favOnly, AMBER)} onClick={() => setFavOnly((v) => !v)}>★ お気に入り{favOnly ? "のみ" : ""}</button>
+          {signedIn === false && (
+            <a href="/login" style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: INK3, textDecoration: "none" }}>
+              <span style={{ color: BLUE }}>?</span> ログインで保存
+            </a>
+          )}
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, marginLeft: 8 }}>並べ替え</span>
           {([["star", "定番度"], ["name", "名前"], ["cat", "カテゴリ"]] as const).map(([k, l]) => (
             <button key={k} style={pill(sort === k, BLUE)} onClick={() => setSort(k)}>{l}</button>

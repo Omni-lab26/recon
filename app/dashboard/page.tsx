@@ -17,9 +17,12 @@ export default async function DashboardPage() {
     id: t.id, name: t.name, cat: t.cat, catName: TOOL_CATS[t.cat].name, c: TOOL_CATS[t.cat].c,
   }));
 
+  const { data: profile } = await supabase.from("profiles").select("display_name").eq("id", user.id).maybeSingle();
+
   return (
     <DashboardView
       email={user.email ?? ""}
+      displayName={profile?.display_name ?? ""}
       createdAt={user.created_at ?? ""}
       favTools={favTools}
     />

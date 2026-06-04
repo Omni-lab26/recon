@@ -31,9 +31,9 @@ function QuickCard({ q }: { q: (typeof QUICK)[number] }) {
   );
 }
 
-export default function DashboardView({ email, createdAt, favTools }: { email: string; createdAt: string; favTools: FavTool[] }) {
+export default function DashboardView({ email, displayName, createdAt, favTools }: { email: string; displayName: string; createdAt: string; favTools: FavTool[] }) {
   const joined = createdAt ? new Date(createdAt).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" }) : "";
-  const initial = email[0]?.toUpperCase() ?? "?";
+  const initial = (displayName || email)[0]?.toUpperCase() ?? "?";
 
   return (
     <main style={{ position: "relative", minHeight: "calc(100vh - 64px)" }}>
@@ -49,7 +49,7 @@ export default function DashboardView({ email, createdAt, favTools }: { email: s
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32, flexWrap: "wrap" }}>
             <span style={{ width: 54, height: 54, borderRadius: "50%", background: `linear-gradient(135deg, ${C.accent}, ${C.cyan})`, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 22, fontWeight: 600, flexShrink: 0 }}>{initial}</span>
             <div>
-              <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 24, color: C.ink, letterSpacing: "-0.02em", lineHeight: 1.2 }}>おかえりなさい</div>
+              <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 24, color: C.ink, letterSpacing: "-0.02em", lineHeight: 1.2 }}>おかえりなさい{displayName && <span>、{displayName}</span>}</div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: C.ink2, marginTop: 3 }}>{email}{joined && <span style={{ color: C.ink3 }}> · {joined} から</span>}</div>
             </div>
           </div>

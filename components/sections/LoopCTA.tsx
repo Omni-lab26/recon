@@ -78,11 +78,11 @@ export default function LoopCTA() {
                     <a href="/ctf" className="btn-ghost">CTFに挑む</a>
                   </>
                 ) : (
-                  <a href="/login" className="btn-primary">無料で始める →</a>
+                  <a href="/signup" className="btn-primary">無料で始める →</a>
                 )}
               </div>
               {!signedIn && signedIn !== null && (
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, marginTop: 16 }}>メール1通でログイン · パスワード不要</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, marginTop: 16 }}>クレジットカード不要 · メール確認で本人確認</div>
               )}
             </div>
           </div>

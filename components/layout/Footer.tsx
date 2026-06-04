@@ -17,6 +17,7 @@ const COLS: { title: string; links: [string, string][] }[] = [
     title: "アカウント",
     links: [
       ["/login", "ログイン"],
+      ["/signup", "新規登録"],
     ],
   },
   {

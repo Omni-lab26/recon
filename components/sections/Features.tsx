@@ -14,7 +14,7 @@ type Feature = {
 
 const FEATURES: Feature[] = [
   { area: "ra", n: "01", glyph: "</>", title: "ロードマップ", mono: "roadmap", desc: "初級から上級まで、迷わず進める体系的カリキュラム。今のあなたに必要な一歩が、いつでも明確。", level: "All Levels", c: GREEN, big: true, href: "/roadmap" },
-  { area: "ar", n: "02", glyph: "#", title: "学習記事", mono: "articles", desc: "ネットワーク基礎からWeb攻撃まで。", level: "Beginner → Expert", c: BLUE, soon: true },
+  { area: "ar", n: "02", glyph: "#", title: "学習記事", mono: "articles", desc: "ネットワーク基礎からWeb攻撃まで。", level: "Beginner → Expert", c: BLUE, href: "/articles" },
   { area: "ct", n: "03", glyph: "⚑", title: "CTF問題集", mono: "ctf", desc: "Web・Crypto・Pwn 分野別に挑戦。", level: "Beginner → Pro", c: PURPLE, href: "/ctf" },
   { area: "to", n: "04", glyph: "$", title: "ツール集", mono: "tools", desc: "nmap, Burp, Metasploit の実践。", level: "All Levels", c: CYAN, href: "/tools" },
   { area: "cv", n: "05", glyph: "!", title: "CVE DB", mono: "cve", desc: "最新の脆弱性をAIが日本語解説。", level: "Inter → Pro", c: PINK, href: "/cve" },

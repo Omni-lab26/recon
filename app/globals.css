@@ -189,3 +189,15 @@ body {
 
 /* ── CVE list ──────────────────────────────────────────────────── */
 .cve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; align-items: start; }
+
+/* ── Glossary ──────────────────────────────────────────────────── */
+.gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; align-items: stretch; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes modalBg { from { opacity: 0 } to { opacity: 1 } }
+@media (max-width: 720px) {
+  .gl-shell { flex-direction: column !important; gap: 16px !important; }
+  .gl-side { width: 100% !important; position: static !important; padding-bottom: 14px !important; border-bottom: 1px solid var(--line) !important; }
+  .gl-side-label { display: none !important; }
+  .gl-side-inner { flex-direction: row !important; overflow-x: auto !important; padding-bottom: 6px !important; }
+  .gl-side-inner > * { flex-shrink: 0 !important; }
+}

@@ -228,7 +228,7 @@ export default function NewsBoard() {
       )}
 
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3, textAlign: "center", marginTop: 28 }}>
-        // 1日3回(朝・昼・夜)更新 · 日本語要約はAIで近日対応 · 詳細は出典元(CISA公式)へ
+        // 1日3回(朝・昼・夜)更新 · 日本語要約はAIで近日対応 · 詳細は出典元(CISA公式)へ · <a href="/glossary" style={{ color: C.blue, textDecoration: "none" }}>? 用語を学ぶ</a>
       </div>
       </>
       )}

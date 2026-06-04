@@ -10,6 +10,7 @@ const LINKS: [string, string][] = [
   ["/tools", "tools"],
   ["/cve", "cve"],
   ["/news", "news"],
+  ["/glossary", "glossary"],
   ["/lab", "lab"],
 ];
 

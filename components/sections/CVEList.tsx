@@ -120,13 +120,14 @@ export default function CVEList() {
   return (
     <div>
       {/* legend */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginBottom: 14 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginBottom: 14, alignItems: "center" }}>
         <span>CVSS:</span>
         {(Object.keys(SEV) as Array<keyof typeof SEV>).map((k) => (
           <span key={k} style={{ color: SEV[k].c, display: "inline-flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 8, height: 8, borderRadius: 2, background: SEV[k].c }} />{SEV[k].t} ({SEV[k].range})
           </span>
         ))}
+        <a href="/glossary#cvss" style={{ color: C.blue, textDecoration: "none", fontFamily: "var(--font-mono)", fontSize: 10.5 }}>? 用語を学ぶ</a>
         <span style={{ marginLeft: "auto" }}>出典: NVD（NIST公式）{data?.updatedAt && ` · 最終更新 ${new Date(data.updatedAt).toLocaleString("ja-JP", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}`}</span>
       </div>
 

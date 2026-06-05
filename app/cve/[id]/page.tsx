@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { TERMS } from "@/lib/glossary-data";
+import { TermChip } from "@/components/glossary/TermChip";
 import { Reveal } from "@/components/ui/motion";
 import { C } from "@/lib/tokens";
 
@@ -117,7 +117,6 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   return { title: `${id} の詳細`, description: `${id} の脆弱性情報(CVSS・影響製品・参照)。NVD + CISA KEV 連携。` };
 }
 
-const termName = (id: string) => TERMS.find((t) => t.id === id)?.name ?? id;
 function fmt(iso: string | null) {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -203,11 +202,7 @@ export default async function CveDetailPage({ params }: { params: { id: string }
               {/* related terms */}
               <Heading>// 関連用語</Heading>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {terms.map((tid) => (
-                  <Link key={tid} href={`/glossary#${tid}`} style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.blue, background: `${C.blue}0d`, border: `1px solid ${C.blue}33`, padding: "5px 11px", borderRadius: 7, textDecoration: "none" }}>
-                    {termName(tid)} →
-                  </Link>
-                ))}
+                {terms.map((tid) => <TermChip key={tid} termId={tid} />)}
               </div>
 
               {/* official */}

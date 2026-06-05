@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ARTICLES } from "@/lib/articles-data";
-import { TERMS } from "@/lib/glossary-data";
+import { TermChip } from "@/components/glossary/TermChip";
 import { Reveal } from "@/components/ui/motion";
 import { C } from "@/lib/tokens";
 
@@ -15,8 +15,6 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   if (!a) return { title: "記事" };
   return { title: a.title, description: a.summary };
 }
-
-const termName = (id: string) => TERMS.find((t) => t.id === id)?.name ?? id;
 
 export default function ArticleDetailPage({ params }: { params: { slug: string } }) {
   const idx = ARTICLES.findIndex((x) => x.slug === params.slug);
@@ -67,17 +65,13 @@ export default function ArticleDetailPage({ params }: { params: { slug: string }
             <>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, letterSpacing: 0.5, margin: "30px 0 10px" }}>// 関連用語</div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {a.terms.map((tid) => (
-                  <Link key={tid} href={`/glossary#${tid}`} style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.blue, background: `${C.blue}0d`, border: `1px solid ${C.blue}33`, padding: "5px 11px", borderRadius: 7, textDecoration: "none" }}>
-                    {termName(tid)} →
-                  </Link>
-                ))}
+                {a.terms.map((tid) => <TermChip key={tid} termId={tid} />)}
               </div>
             </>
           )}
 
           {/* roadmap CTA */}
-          <Link href="/roadmap" style={{ display: "flex", alignItems: "center", gap: 11, padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.line}`, background: C.soft, textDecoration: "none", marginTop: 28 }}>
+          <Link href={`/roadmap#${a.field}`} style={{ display: "flex", alignItems: "center", gap: 11, padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.line}`, background: C.soft, textDecoration: "none", marginTop: 28 }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 15, color: a.c }}>⛰</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3 }}>次のステップ</div>

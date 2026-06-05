@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { TOOLS, TOOL_CATS } from "@/lib/tools-data";
-import { TERMS } from "@/lib/glossary-data";
 import { CopyCommand } from "@/components/ui/CopyCommand";
+import { TermChip } from "@/components/glossary/TermChip";
 import { Reveal } from "@/components/ui/motion";
 import { C } from "@/lib/tokens";
 
@@ -16,8 +16,6 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   if (!tool) return { title: "ツール" };
   return { title: `${tool.name} の使い方`, description: tool.long.slice(0, 120) };
 }
-
-const termName = (id: string) => TERMS.find((t) => t.id === id)?.name ?? id;
 
 function Heading({ children }: { children: React.ReactNode }) {
   return <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, letterSpacing: 0.5, marginBottom: 10, marginTop: 30 }}>{children}</div>;
@@ -73,7 +71,7 @@ export default function ToolDetailPage({ params }: { params: { id: string } }) {
 
           {/* ロードマップ */}
           <Heading>// 学習でどう使うか</Heading>
-          <Link href="/roadmap" style={{ display: "flex", alignItems: "center", gap: 11, padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.line}`, background: C.soft, textDecoration: "none" }}>
+          <Link href={`/roadmap#${tool.roadmap.fieldKey}`} style={{ display: "flex", alignItems: "center", gap: 11, padding: "14px 16px", borderRadius: 12, border: `1px solid ${C.line}`, background: C.soft, textDecoration: "none" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 15, color: cat.c }}>⛰</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3 }}>ロードマップで使う</div>
@@ -87,11 +85,7 @@ export default function ToolDetailPage({ params }: { params: { id: string } }) {
             <>
               <Heading>// 関連用語</Heading>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {tool.terms.map((tid) => (
-                  <Link key={tid} href={`/glossary#${tid}`} style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.blue, background: `${C.blue}0d`, border: `1px solid ${C.blue}33`, padding: "5px 11px", borderRadius: 7, textDecoration: "none" }}>
-                    {termName(tid)} →
-                  </Link>
-                ))}
+                {tool.terms.map((tid) => <TermChip key={tid} termId={tid} />)}
               </div>
             </>
           )}

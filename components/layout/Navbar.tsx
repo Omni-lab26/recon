@@ -13,6 +13,7 @@ const LINKS: [string, string][] = [
   ["/news", "news"],
   ["/glossary", "glossary"],
   ["/articles", "articles"],
+  ["/lab", "lab"],
 ];
 
 export default function Navbar() {

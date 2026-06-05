@@ -73,6 +73,10 @@ export default function AuthMenu() {
             style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, textDecoration: "none", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)" }}>
             プロフィール
           </Link>
+          <Link href="/settings" onClick={() => setOpen(false)}
+            style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, textDecoration: "none", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)" }}>
+            設定
+          </Link>
           <button onClick={onLogout}
             style={{ width: "100%", textAlign: "left", padding: "10px 12px", borderRadius: 7, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--ink-2)" }}>
             ログアウト

@@ -20,6 +20,7 @@ const COLS: { title: string; links: [string, string][] }[] = [
       ["/signup", "新規登録"],
       ["/dashboard", "ダッシュボード"],
       ["/profile", "プロフィール"],
+      ["/settings", "設定"],
     ],
   },
   {

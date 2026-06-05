@@ -91,7 +91,7 @@ export default function ProfileForm({ userId, email, initialName, initialBio }: 
         <Reveal>
           <div style={{ marginTop: 20, display: "flex", gap: 16, fontFamily: "var(--font-mono)", fontSize: 12 }}>
             <Link href="/dashboard" style={{ color: C.blue, textDecoration: "none" }}>← ダッシュボード</Link>
-            <Link href="/forgot-password" style={{ color: C.ink3, textDecoration: "none" }}>パスワードを変更</Link>
+            <Link href="/settings" style={{ color: C.ink3, textDecoration: "none" }}>パスワード・メールを変更</Link>
           </div>
         </Reveal>
       </section>

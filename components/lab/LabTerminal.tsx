@@ -234,7 +234,8 @@ export default function LabTerminal() {
           if (data === "\x1b[C") { if (curRef.current < lineRef.current.length) { curRef.current++; redraw(); } return; }
           if (data === "\x1b[D") { if (curRef.current > 0) { curRef.current--; redraw(); } return; }
           // printable
-          if ([...data].every((ch) => ch >= " ")) {
+          //if ([...data].every((ch) => ch >= " ")) {
+          if (Array.from(data).every((ch) => ch >= " ")) {
             const l = lineRef.current;
             lineRef.current = l.slice(0, curRef.current) + data + l.slice(curRef.current);
             curRef.current += data.length; redraw();

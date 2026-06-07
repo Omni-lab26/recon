@@ -33,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthShell label="login">
+    <AuthShell label="login" description="メールアドレスとパスワードでログイン">
       <h1 style={S.h1}>RECONに入る</h1>
       <p style={S.intro}>メールアドレスとパスワードでログイン。</p>
 

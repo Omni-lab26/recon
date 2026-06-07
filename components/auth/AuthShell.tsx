@@ -5,14 +5,19 @@ import { Reveal } from "@/components/ui/motion";
 import { C } from "@/lib/tokens";
 
 // すべての認証ページに共通の中央寄せカード枠。
-export function AuthShell({ label, labelColor = C.accent, children }: { label: string; labelColor?: string; children: ReactNode }) {
+export function AuthShell({ label, description, labelColor = C.accent, children }: { label: string; description?: string; labelColor?: string; children: ReactNode }) {
   return (
     <main style={{ minHeight: "calc(100vh - 64px)", padding: "60px 24px" }}>
       <div style={{ maxWidth: 440, margin: "0 auto" }}>
         <Reveal>
           <div style={{ padding: "30px 28px", borderRadius: 18, border: `1px solid ${C.line}`, background: C.bg, boxShadow: "0 1px 2px rgba(10,10,15,0.03)" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: labelColor, background: `${labelColor}10`, border: `1px solid ${labelColor}2e`, padding: "4px 11px", borderRadius: 100, marginBottom: 20 }}>
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: labelColor }} />// {label}
+            <div style={{ display: "flex", alignItems: "center", gap: 11, flexWrap: "wrap", marginBottom: 20 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: labelColor, background: `${labelColor}10`, border: `1px solid ${labelColor}2e`, padding: "4px 11px", borderRadius: 100, whiteSpace: "nowrap" }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: labelColor }} />// {label}
+              </span>
+              {description && (
+                <span style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: C.ink2, lineHeight: 1.5 }}>{description}</span>
+              )}
             </div>
             {children}
           </div>

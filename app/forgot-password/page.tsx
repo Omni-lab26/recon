@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
 
   if (done) {
     return (
-      <AuthShell label="reset" labelColor={C.blue}>
+      <AuthShell label="reset" description="リセット用リンクをメールで送る" labelColor={C.blue}>
         <h1 style={{ ...S.h1, fontSize: 22 }}><span style={{ color: C.accent }}>✓</span> リセットメールを送りました</h1>
         <p style={{ ...S.intro, marginBottom: 18 }}>
           <span style={{ fontFamily: "var(--font-mono)", color: C.ink, background: C.soft, padding: "1px 7px", borderRadius: 5, border: `1px solid ${C.line}` }}>{email}</span><br />
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <AuthShell label="reset" labelColor={C.blue}>
+    <AuthShell label="reset" description="リセット用リンクをメールで送る" labelColor={C.blue}>
       <h1 style={S.h1}>パスワードを再設定</h1>
       <p style={S.intro}>登録したメールアドレスを入れると、リセット用のリンクを送ります。</p>
 

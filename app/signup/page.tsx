@@ -44,7 +44,7 @@ export default function SignupPage() {
 
   if (done) {
     return (
-      <AuthShell label="signup">
+      <AuthShell label="signup" description="無料でアカウントを作成">
         <h1 style={{ ...S.h1, fontSize: 22 }}><span style={{ color: C.accent }}>✓</span> 確認メールを送りました</h1>
         <p style={{ ...S.intro, marginBottom: 18 }}>
           <span style={{ fontFamily: "var(--font-mono)", color: C.ink, background: C.soft, padding: "1px 7px", borderRadius: 5, border: `1px solid ${C.line}` }}>{email}</span><br />
@@ -59,7 +59,7 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthShell label="signup">
+    <AuthShell label="signup" description="無料でアカウントを作成">
       <h1 style={S.h1}>新規登録</h1>
       <p style={S.intro}>メールアドレスとパスワードで登録。確認メールを受け取ったら本人確認完了です。</p>
 

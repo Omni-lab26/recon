@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Reveal } from "@/components/ui/motion";
 import LabTerminal from "@/components/lab/LabTerminal";
+import { PageLabel } from "@/components/ui/PageLabel";
 import { C } from "@/lib/tokens";
 
 export const metadata: Metadata = {
@@ -13,9 +14,7 @@ export default function LabPage() {
     <main style={{ position: "relative", minHeight: "calc(100vh - 64px)" }}>
       <section style={{ maxWidth: 900, margin: "0 auto", padding: "44px 24px 90px" }}>
         <Reveal>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: C.amber, background: `${C.amber}10`, border: `1px solid ${C.amber}2e`, padding: "5px 12px", borderRadius: 100, marginBottom: 18 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.amber }} />// lab
-          </span>
+          <PageLabel label="lab" description="ブラウザ内ターミナルで攻撃と防御を体験" color={C.amber} />
         </Reveal>
         <Reveal>
           <h1 style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 28, color: C.ink, letterSpacing: "-0.025em", lineHeight: 1.2, margin: "0 0 8px" }}>ハンズオン・ラボ</h1>

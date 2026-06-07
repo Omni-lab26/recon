@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Reveal } from "@/components/ui/motion";
 import RoadmapFields from "@/components/sections/RoadmapFields";
 import { LEVELS } from "@/lib/roadmap-data";
+import { PageLabel } from "@/components/ui/PageLabel";
 import { C } from "@/lib/tokens";
 
 export const metadata: Metadata = {
@@ -15,9 +16,7 @@ export default function RoadmapPage() {
       {/* label */}
       <section style={{ maxWidth: 1180, margin: "0 auto", padding: "44px 24px 0" }}>
         <Reveal>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: C.accent, background: `${C.accent}10`, border: `1px solid ${C.accent}2e`, padding: "5px 12px", borderRadius: 100 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: C.accent }} />// roadmap
-          </span>
+          <PageLabel label="roadmap" description="初級から上級までの体系的な学習マップ" color={C.accent} />
         </Reveal>
       </section>
 

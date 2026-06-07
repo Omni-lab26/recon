@@ -49,12 +49,12 @@ export default function ResetPasswordPage() {
   };
 
   if (!ready) {
-    return <AuthShell label="reset" labelColor={C.blue}><div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.ink3, padding: "20px 0", textAlign: "center" }}>// 確認中...</div></AuthShell>;
+    return <AuthShell label="reset" description="新しいパスワードを設定する" labelColor={C.blue}><div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.ink3, padding: "20px 0", textAlign: "center" }}>// 確認中...</div></AuthShell>;
   }
 
   if (!hasSession) {
     return (
-      <AuthShell label="reset" labelColor={C.blue}>
+      <AuthShell label="reset" description="新しいパスワードを設定する" labelColor={C.blue}>
         <h1 style={{ ...S.h1, fontSize: 22 }}>リンクが無効です</h1>
         <p style={S.intro}>このページはパスワードリセットメールのリンクから開く必要があります。リンクの有効期限が切れているか、すでに使用済みかもしれません。</p>
         <a href="/forgot-password" style={{ ...S.link, color: C.blue, fontFamily: "var(--font-mono)", fontSize: 12.5 }}>もう一度リセットメールを送る →</a>
@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <AuthShell label="reset" labelColor={C.blue}>
+    <AuthShell label="reset" description="新しいパスワードを設定する" labelColor={C.blue}>
       <h1 style={S.h1}>新しいパスワード</h1>
       <p style={S.intro}>新しいパスワードを設定してください。</p>
 

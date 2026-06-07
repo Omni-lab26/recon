@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FIELDS, LEVELS, TAG_GLYPH, type Field, type Step } from "@/lib/roadmap-data";
 import { Reveal } from "@/components/ui/motion";
+import { useProgress } from "@/lib/use-progress";
 
 const INK = "#0a0a0b";
 const INK2 = "#52525b";
@@ -14,9 +15,10 @@ const BG = "#ffffff";
 // ノードの中心X: ステップ行の左padding(8) + ノード幅(38)/2 = 27（行基準の絶対配置）
 const NODE_CENTER_X = 27;
 
-function StepRow({ step, i, total, openKey, toggle, fieldKey }: {
+function StepRow({ step, i, total, openKey, toggle, fieldKey, completed, onComplete }: {
   step: Step; i: number; total: number; openKey: string | null;
   toggle: (k: string) => void; fieldKey: string;
+  completed: boolean; onComplete: () => void;
 }) {
   const L = LEVELS[i];
   const next = LEVELS[i + 1];
@@ -39,8 +41,8 @@ function StepRow({ step, i, total, openKey, toggle, fieldKey }: {
         onMouseLeave={() => setHov(false)}
         style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 13, padding: "7px 10px 7px 8px", borderRadius: 12, cursor: "pointer", background: hov || open ? `${L.c}0d` : "transparent", transition: "background 0.2s" }}
       >
-        <div style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, background: `${L.c}16`, border: `1.5px solid ${L.c}${isSummit ? "" : "44"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 14, color: L.c, boxShadow: isSummit ? `0 4px 12px ${L.c}33` : "none" }}>
-          {TAG_GLYPH[step.tag]}
+        <div style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, background: completed ? L.c : `${L.c}16`, border: `1.5px solid ${L.c}${isSummit || completed ? "" : "44"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 14, color: completed ? "#fff" : L.c, boxShadow: completed || isSummit ? `0 4px 12px ${L.c}33` : "none", transition: "all 0.2s" }}>
+          {completed ? "✓" : TAG_GLYPH[step.tag]}
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -81,13 +83,25 @@ function StepRow({ step, i, total, openKey, toggle, fieldKey }: {
               </div>
             </div>
           )}
+
+          {/* 完了マーク */}
+          <button onClick={(e) => { e.stopPropagation(); onComplete(); }}
+            style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 11.5, padding: "7px 13px", borderRadius: 9, cursor: "pointer",
+              border: `1px solid ${completed ? L.c : LINE}`,
+              background: completed ? L.c : BG,
+              color: completed ? "#fff" : INK2, transition: "all 0.18s" }}>
+            <span style={{ width: 14, height: 14, borderRadius: "50%", border: `1.5px solid ${completed ? "#fff" : INK3}`, background: completed ? "transparent" : "transparent", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 10 }}>
+              {completed ? "✓" : ""}
+            </span>
+            {completed ? "完了済み(取り消す)" : "このステップを完了とマーク"}
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-function FieldCard({ f, idx }: { f: Field; idx: number }) {
+function FieldCard({ f, idx, isDone, onComplete }: { f: Field; idx: number; isDone: (id: string) => boolean; onComplete: (id: string) => void }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const toggle = (k: string) => setOpenKey((cur) => (cur === k ? null : k));
   return (
@@ -101,22 +115,45 @@ function FieldCard({ f, idx }: { f: Field; idx: number }) {
           </div>
           <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 19, color: INK, marginTop: 12, letterSpacing: "-0.01em" }}>{f.name}</div>
           <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: INK2, marginTop: 4, lineHeight: 1.5 }}>{f.desc}</div>
+          {/* per-field progress */}
+          <FieldProgress f={f} isDone={isDone} />
         </div>
         <div style={{ padding: "16px 12px 18px" }}>
-          {f.steps.map((s, i) => (
-            <StepRow key={i} step={s} i={i} total={f.steps.length} openKey={openKey} toggle={toggle} fieldKey={f.key} />
-          ))}
+          {f.steps.map((s, i) => {
+            const id = `${f.key}:${i}`;
+            return (
+              <StepRow key={i} step={s} i={i} total={f.steps.length} openKey={openKey} toggle={toggle} fieldKey={f.key}
+                completed={isDone(id)} onComplete={() => onComplete(id)} />
+            );
+          })}
         </div>
       </div>
     </Reveal>
   );
 }
 
+function FieldProgress({ f, isDone }: { f: Field; isDone: (id: string) => boolean }) {
+  const done = f.steps.reduce((acc, _, i) => acc + (isDone(`${f.key}:${i}`) ? 1 : 0), 0);
+  const total = f.steps.length;
+  const pct = (done / total) * 100;
+  return (
+    <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ flex: 1, height: 6, borderRadius: 3, background: `${f.c}14`, overflow: "hidden" }}>
+        <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg, ${f.c}, ${f.c}cc)`, transition: "width 0.4s ease" }} />
+      </div>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: f.c, minWidth: 32, textAlign: "right" }}>{done}/{total}</span>
+    </div>
+  );
+}
+
 export default function RoadmapFields() {
+  const { isDone, toggle } = useProgress();
   return (
     <div className="rm-grid">
       {FIELDS.map((f, i) => (
-        <FieldCard key={f.key} f={f} idx={i} />
+        <FieldCard key={f.key} f={f} idx={i}
+          isDone={(id) => isDone("roadmap", id)}
+          onComplete={(id) => toggle("roadmap", id)} />
       ))}
     </div>
   );

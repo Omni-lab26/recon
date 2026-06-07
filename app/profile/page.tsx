@@ -18,6 +18,9 @@ export default async function ProfilePage() {
     id: t.id, name: t.name, cat: t.cat, catName: TOOL_CATS[t.cat].name, c: TOOL_CATS[t.cat].c,
   }));
 
+  const { data: progressRows } = await supabase.from("progress").select("kind, item_id, completed_at").order("completed_at", { ascending: false });
+  const progress = (progressRows ?? []).map((r) => ({ kind: String(r.kind), item_id: String(r.item_id), completed_at: String(r.completed_at) }));
+
   return (
     <ProfileHub
       userId={user.id}
@@ -27,6 +30,7 @@ export default async function ProfilePage() {
       initialBio={profile?.bio ?? ""}
       initialAvatar={profile?.avatar_url ?? null}
       favTools={favTools}
+      progress={progress}
     />
   );
 }

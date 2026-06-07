@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Reveal } from "@/components/ui/motion";
 import { Avatar } from "@/components/profile/Avatar";
 import SettingsDrawer from "@/components/profile/SettingsDrawer";
+import { FIELDS } from "@/lib/roadmap-data";
+import { ARTICLES } from "@/lib/articles-data";
+import { computeStreak, roadmapByField, countByKind, recentActivity, relativeTime, ROADMAP_TOTAL, type ProgressRow } from "@/lib/progress";
 import { C } from "@/lib/tokens";
 
 type FavTool = { id: string; name: string; cat: string; catName: string; c: string };
@@ -17,6 +20,7 @@ type Props = {
   initialBio: string;
   initialAvatar: string | null;
   favTools: FavTool[];
+  progress: ProgressRow[];
 };
 
 const QUICK = [
@@ -56,7 +60,110 @@ function GearButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export default function ProfileHub({ userId, email, createdAt, initialName, initialBio, initialAvatar, favTools }: Props) {
+function StatTile({ label, value, sub, color }: { label: string; value: React.ReactNode; sub?: string; color: string }) {
+  return (
+    <div style={{ flex: 1, minWidth: 130, padding: "18px 18px", borderRadius: 14, border: `1px solid ${color}33`, background: `linear-gradient(135deg, ${color}0a, ${color}03)` }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: color, letterSpacing: 0.5, marginBottom: 6 }}>{label}</div>
+      <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: 28, color: C.ink, letterSpacing: "-0.02em", lineHeight: 1 }}>{value}</div>
+      {sub && <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginTop: 5 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function LearningRecord({ progress }: { progress: ProgressRow[] }) {
+  const stats = useMemo(() => {
+    const streak = computeStreak(progress.map((r) => r.completed_at));
+    const counts = countByKind(progress);
+    const byField = roadmapByField(progress);
+    const recent = recentActivity(progress, 5);
+    return { streak, counts, byField, recent };
+  }, [progress]);
+
+  const overall = stats.counts.roadmap + stats.counts.article;
+  const overallTotal = ROADMAP_TOTAL + ARTICLES.length;
+  const overallPct = overallTotal === 0 ? 0 : (overall / overallTotal) * 100;
+
+  if (progress.length === 0) {
+    return (
+      <div style={{ padding: "28px 22px", borderRadius: 14, border: `1px dashed ${C.line2}`, background: C.soft, textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-sans)", fontSize: 14, color: C.ink2, marginBottom: 8 }}>まだ学習の記録がありません。</div>
+        <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink3, lineHeight: 1.7, marginBottom: 14 }}>
+          ロードマップのステップや記事を「完了」とマークすると、ここに進捗・連続学習日数・最近の活動が積み上がります。
+        </div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/roadmap" style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.accent, background: `${C.accent}10`, border: `1px solid ${C.accent}33`, padding: "7px 14px", borderRadius: 8, textDecoration: "none" }}>ロードマップを開く →</Link>
+          <Link href="/articles" style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.blue, background: `${C.blue}10`, border: `1px solid ${C.blue}33`, padding: "7px 14px", borderRadius: 8, textDecoration: "none" }}>学習記事を読む →</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* top stats */}
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+        <StatTile label="STREAK" value={<span>{stats.streak}<span style={{ fontSize: 14, color: C.ink3, marginLeft: 5 }}>日連続</span></span>} sub={stats.streak >= 1 ? "🔥 今日も学習" : "今日学んで再開"} color={stats.streak >= 1 ? C.amber : C.ink3} />
+        <StatTile label="ロードマップ" value={<span>{stats.counts.roadmap}<span style={{ fontSize: 14, color: C.ink3, marginLeft: 5 }}>/ {ROADMAP_TOTAL}</span></span>} sub={`${Math.round((stats.counts.roadmap / ROADMAP_TOTAL) * 100)}% 達成`} color={C.accent} />
+        <StatTile label="読了した記事" value={<span>{stats.counts.article}<span style={{ fontSize: 14, color: C.ink3, marginLeft: 5 }}>/ {ARTICLES.length}</span></span>} sub={ARTICLES.length === 0 ? "—" : `${Math.round((stats.counts.article / ARTICLES.length) * 100)}% 完了`} color={C.blue} />
+      </div>
+
+      {/* overall progress bar */}
+      <div style={{ padding: "18px 20px", borderRadius: 14, border: `1px solid ${C.line}`, background: C.bg, marginBottom: 18 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink2, letterSpacing: 0.5 }}>// 全体の進捗</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink }}>{overall} / {overallTotal} <span style={{ color: C.ink3 }}>· {Math.round(overallPct)}%</span></span>
+        </div>
+        <div style={{ height: 8, borderRadius: 4, background: C.line, overflow: "hidden" }}>
+          <div style={{ width: `${overallPct}%`, height: "100%", background: `linear-gradient(90deg, ${C.accent}, ${C.cyan}, ${C.blue})`, transition: "width 0.5s ease" }} />
+        </div>
+      </div>
+
+      {/* per-field bars */}
+      <div style={{ padding: "18px 20px", borderRadius: 14, border: `1px solid ${C.line}`, background: C.bg, marginBottom: 18 }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink2, letterSpacing: 0.5, marginBottom: 14 }}>// 分野別</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+          {FIELDS.map((f) => {
+            const done = stats.byField[f.key] ?? 0;
+            const total = f.steps.length;
+            const pct = (done / total) * 100;
+            return (
+              <Link key={f.key} href={`/roadmap#${f.key}`}
+                style={{ display: "flex", alignItems: "center", gap: 11, padding: "10px 12px", borderRadius: 10, textDecoration: "none", transition: "background 0.18s" }}>
+                <span style={{ width: 28, height: 28, borderRadius: 8, background: `${f.c}14`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 13, color: f.c, flexShrink: 0 }}>{f.glyph}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                    <span style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 12.5, color: C.ink }}>{f.name}</span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: f.c }}>{done}/{total}</span>
+                  </div>
+                  <div style={{ height: 5, borderRadius: 3, background: `${f.c}14`, overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: `linear-gradient(90deg, ${f.c}, ${f.c}cc)`, transition: "width 0.5s ease" }} />
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* recent activity */}
+      <div style={{ padding: "18px 20px", borderRadius: 14, border: `1px solid ${C.line}`, background: C.bg }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink2, letterSpacing: 0.5, marginBottom: 12 }}>// 最近の活動</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {stats.recent.map((r) => (
+            <Link key={`${r.kind}:${r.item_id}:${r.completed_at}`} href={r.href}
+              style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 10px", borderRadius: 8, textDecoration: "none", color: "inherit" }}>
+              <span style={{ width: 7, height: 7, borderRadius: 2, background: r.color, flexShrink: 0 }} />
+              <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, flexShrink: 0 }}>{relativeTime(r.completed_at)}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ProfileHub({ userId, email, createdAt, initialName, initialBio, initialAvatar, favTools, progress }: Props) {
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
   const [avatar, setAvatar] = useState<string | null>(initialAvatar);
@@ -146,12 +253,7 @@ export default function ProfileHub({ userId, email, createdAt, initialName, init
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink2, letterSpacing: 0.5 }}>// 学習の記録</span>
             <div style={{ flex: 1, height: 1, background: C.line }} />
           </div>
-          <div style={{ padding: "24px 22px", borderRadius: 14, border: `1px solid ${C.line}`, background: C.soft }}>
-            <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15, color: C.ink, marginBottom: 6 }}>進捗・ストリークは近日対応</div>
-            <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink2, lineHeight: 1.6 }}>
-              ロードマップの達成状況、連続学習日数(ストリーク)、解いたCTFの記録などをここに表示する予定です。まずはクイックアクセスから学習を進めましょう。
-            </div>
-          </div>
+          <LearningRecord progress={progress} />
         </Reveal>
       </section>
 

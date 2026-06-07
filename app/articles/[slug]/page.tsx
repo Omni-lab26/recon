@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ARTICLES } from "@/lib/articles-data";
 import { TermChip } from "@/components/glossary/TermChip";
+import MarkReadButton from "@/components/articles/MarkReadButton";
 import { Reveal } from "@/components/ui/motion";
 import { C } from "@/lib/tokens";
 
@@ -79,6 +80,9 @@ export default function ArticleDetailPage({ params }: { params: { slug: string }
             </div>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: a.c }}>→</span>
           </Link>
+
+          {/* mark as read */}
+          <MarkReadButton slug={a.slug} color={a.c} />
 
           {/* prev / next */}
           <div style={{ display: "flex", gap: 12, marginTop: 28, paddingTop: 22, borderTop: `1px solid ${C.line}` }}>

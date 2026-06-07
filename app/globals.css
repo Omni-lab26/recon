@@ -42,6 +42,7 @@ body {
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 @keyframes gradShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 @keyframes aur1 { 0%, 100% { transform: translate(-50%, -20%) scale(1); } 50% { transform: translate(-42%, -12%) scale(1.12); } }
 @keyframes aur2 { 0%, 100% { transform: translate(-50%, -20%) scale(1.05); } 50% { transform: translate(-58%, -26%) scale(0.92); } }
@@ -200,4 +201,13 @@ body {
   .gl-side-label { display: none !important; }
   .gl-side-inner { flex-direction: row !important; overflow-x: auto !important; padding-bottom: 6px !important; }
   .gl-side-inner > * { flex-shrink: 0 !important; }
+}
+
+/* ナビバー: デスクトップ/モバイル切り替え */
+.nav-desktop { display: flex !important; }
+.nav-mobile  { display: none !important; }
+
+@media (max-width: 780px) {
+  .nav-desktop { display: none !important; }
+  .nav-mobile  { display: flex !important; }
 }

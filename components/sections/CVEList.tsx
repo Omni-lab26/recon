@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { CveItem, CveSeverity } from "@/app/api/cve/route";
+import { BookmarkButton } from "@/components/ui/BookmarkButton";
+import { useBookmarks } from "@/lib/use-bookmarks";
 import { C } from "@/lib/tokens";
 
 const SEV: Record<Exclude<CveSeverity, "none">, { c: string; t: string; jp: string; range: string }> = {
@@ -31,28 +33,35 @@ function fmtDate(iso: string | null): string {
   return d.toLocaleDateString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit" });
 }
 
-function CveCard({ c }: { c: CveItem }) {
+function CveCard({ c, bookmarked }: { c: CveItem; bookmarked: boolean }) {
   const [h, setH] = useState(false);
+  const { toggle } = useBookmarks();
   const sv = c.severity === "none" ? null : SEV[c.severity];
   const edge = sv?.c ?? C.ink3;
   return (
-    <a href={`/cve/${c.id}`} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ position: "relative", display: "block", padding: "16px 16px 14px", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, textDecoration: "none", transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${edge}1f` : "0 1px 2px rgba(10,10,15,0.03)", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, gap: 8 }}>
-        <CVSSBadge score={c.cvss} s={c.severity} />
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {c.kev && <KevBadge />}
-          <SevBadge s={c.severity} />
+    <div style={{ position: "relative", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${edge}1f` : "0 1px 2px rgba(10,10,15,0.03)", overflow: "hidden" }}>
+      <a href={`/cve/${c.id}`} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
+        style={{ display: "block", padding: "16px 16px 14px", textDecoration: "none" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, gap: 8 }}>
+          <CVSSBadge score={c.cvss} s={c.severity} />
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {c.kev && <KevBadge />}
+            <SevBadge s={c.severity} />
+          </div>
         </div>
-      </div>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: 13.5, fontWeight: 600, color: C.ink, marginBottom: 8, letterSpacing: "-0.01em" }}>{c.id}</div>
-      <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: C.ink2, lineHeight: 1.55, marginBottom: 12, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{c.summary || "（概要なし）"}</div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: edge }}>{c.vendor}</span>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{fmtDate(c.date)}</span>
-      </div>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3, marginTop: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.product}</div>
-    </a>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 13.5, fontWeight: 600, color: C.ink, marginBottom: 8, letterSpacing: "-0.01em" }}>{c.id}</div>
+        <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: C.ink2, lineHeight: 1.55, marginBottom: 12, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{c.summary || "（概要なし）"}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: edge }}>{c.vendor}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{fmtDate(c.date)}</span>
+        </div>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3, marginTop: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.product}</div>
+      </a>
+      <button onClick={(e) => { e.stopPropagation(); toggle("cve", c.id); }}
+        title={bookmarked ? "ブックマークを外す" : "保存"} style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: 7, border: `1px solid ${bookmarked ? C.amber : C.line2}`, background: bookmarked ? `${C.amber}12` : "transparent", color: bookmarked ? C.amber : C.ink3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, transition: "all 0.18s" }}>
+        ★
+      </button>
+    </div>
   );
 }
 
@@ -68,6 +77,7 @@ export default function CVEList() {
   const [vendor, setVendor] = useState<string>("all");
   const [q, setQ] = useState("");
   const [kevOnly, setKevOnly] = useState(false);
+  const { isBookmarked } = useBookmarks();
 
   useEffect(() => {
     let alive = true;
@@ -210,7 +220,7 @@ export default function CVEList() {
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3 }}>{arr.length}</span>
                   <div style={{ flex: 1, height: 1, background: C.line, minWidth: 20 }} />
                 </div>
-                <div className="cve-grid">{arr.map((c) => <CveCard key={c.id} c={c} />)}</div>
+                <div className="cve-grid">{arr.map((c) => <CveCard key={c.id} c={c} bookmarked={isBookmarked("cve", c.id)} />)}</div>
               </div>
             );
           })}

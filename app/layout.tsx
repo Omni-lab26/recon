@@ -29,6 +29,15 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RECON — Reveal Every Crack, Own Networks.",
     description: "Learn by breaking. Master by defending.",
+    creator: "@recontech",
+  },
+  icons: {
+    icon: [
+      { url: "/icon", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/apple-icon", type: "image/png", sizes: "180x180" },
+    ],
   },
   robots: { index: true, follow: true },
 };

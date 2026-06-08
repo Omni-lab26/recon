@@ -39,6 +39,90 @@ function Status({ kind, msg }: { kind: "ok" | "err"; msg: string }) {
   return <div style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color, padding: "8px 11px", borderRadius: 8, background: `${color}0c`, border: `1px solid ${color}33`, marginTop: 10 }}>{kind === "ok" ? "✓ " : ""}{msg}</div>;
 }
 
+function DangerZone({ email, onDeleted }: { email: string; onDeleted: () => void }) {
+  const [step, setStep] = useState<"idle" | "confirm" | "typing" | "deleting">("idle");
+  const [typed, setTyped] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const doDelete = async () => {
+    if (typed !== "DELETE") return;
+    setStep("deleting");
+    setError(null);
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: "DELETE" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      onDeleted();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "削除に失敗しました");
+      setStep("typing");
+    }
+  };
+
+  return (
+    <div>
+      <h3 style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 17, color: C.pink, margin: "0 0 12px" }}>危険な操作</h3>
+
+      {step === "idle" && (
+        <>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink2, lineHeight: 1.7, margin: "0 0 16px" }}>
+            アカウントを削除すると、お気に入り・プロフィール・学習記録・ブックマークなどすべてのデータが<strong style={{ color: C.ink }}>完全に削除</strong>され、復元できません。
+          </p>
+          <button onClick={() => setStep("confirm")}
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5, padding: "9px 18px", borderRadius: 9, cursor: "pointer", border: `1px solid ${C.pink}66`, background: `${C.pink}0c`, color: C.pink }}>
+            アカウントを削除する
+          </button>
+        </>
+      )}
+
+      {step === "confirm" && (
+        <div style={{ padding: "18px 18px", borderRadius: 12, border: `1px solid ${C.pink}44`, background: `${C.pink}08` }}>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink, lineHeight: 1.7, margin: "0 0 14px" }}>
+            本当に削除しますか? <strong>{email}</strong> に関連するすべてのデータが消去されます。
+          </p>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => setStep("typing")}
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13, padding: "9px 16px", borderRadius: 9, cursor: "pointer", border: "none", background: C.pink, color: "#fff" }}>
+              続ける
+            </button>
+            <button onClick={() => setStep("idle")}
+              style={{ fontFamily: "var(--font-sans)", fontSize: 13, padding: "9px 16px", borderRadius: 9, cursor: "pointer", border: `1px solid ${C.line2}`, background: C.bg, color: C.ink2 }}>
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
+
+      {(step === "typing" || step === "deleting") && (
+        <div style={{ padding: "18px 18px", borderRadius: 12, border: `1px solid ${C.pink}44`, background: `${C.pink}08` }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: C.ink, marginBottom: 10, lineHeight: 1.6 }}>
+            削除を確認するために <strong>DELETE</strong> と入力してください。
+          </p>
+          <input value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="DELETE"
+            disabled={step === "deleting"}
+            style={{ ...S.input, marginBottom: 12, borderColor: typed === "DELETE" ? C.pink : C.line2, fontFamily: "var(--font-mono)" }} />
+          {error && <div style={S.error}>{error}</div>}
+          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+            <button onClick={doDelete} disabled={typed !== "DELETE" || step === "deleting"}
+              style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13, padding: "9px 16px", borderRadius: 9, cursor: typed === "DELETE" ? "pointer" : "default", border: "none", background: typed === "DELETE" ? C.pink : C.ink3, color: "#fff", transition: "background 0.2s" }}>
+              {step === "deleting" ? "削除中..." : "完全に削除する"}
+            </button>
+            <button onClick={() => { setStep("idle"); setTyped(""); setError(null); }}
+              disabled={step === "deleting"}
+              style={{ fontFamily: "var(--font-sans)", fontSize: 13, padding: "9px 16px", borderRadius: 9, cursor: "pointer", border: `1px solid ${C.line2}`, background: C.bg, color: C.ink2 }}>
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SettingsDrawer({ open, onClose, userId, email, initialName, initialBio, initialAvatar, onProfileUpdated }: Props) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -252,10 +336,7 @@ export default function SettingsDrawer({ open, onClose, userId, email, initialNa
           )}
 
           {tab === "danger" && (
-            <div>
-              <h3 style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 17, color: C.pink, margin: "0 0 10px" }}>危険な操作</h3>
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink2, lineHeight: 1.7, margin: 0 }}>アカウント削除は近日対応予定です。削除するとお気に入り・プロフィールを含むすべてのデータが復元できないため、慎重に実装します。</p>
-            </div>
+            <DangerZone email={email} onDeleted={() => { router.push("/"); router.refresh(); }} />
           )}
         </div>
       </aside>

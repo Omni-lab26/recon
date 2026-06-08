@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { NextResponse } from "next/server";
 
 // NVD CVE API（公式・無料・APIキー不要 / 30秒5リクの制限あり）
@@ -76,7 +78,7 @@ function parseNvd(json: Record<string, unknown>): Omit<CveItem, "kev">[] {
 
 async function fetchKev(): Promise<Set<string>> {
   try {
-    const res = await fetch(KEV_URL, { next: { revalidate: 28800 } });
+    const res = await fetch(KEV_URL, { next: { revalidate: 300 } });
     if (!res.ok) return new Set();
     const j = await res.json();
     const arr = (j.vulnerabilities as Array<Record<string, unknown>>) ?? [];
@@ -90,7 +92,7 @@ async function fetchNvd(): Promise<Omit<CveItem, "kev">[]> {
   const url = `${NVD_URL}?pubStartDate=${start.toISOString()}&pubEndDate=${end.toISOString()}&resultsPerPage=50`;
   const res = await fetch(url, {
     headers: { "User-Agent": "RECON/1.0 (security learning platform)" },
-    next: { revalidate: 28800 },
+    next: { revalidate: 300 },
   });
   if (!res.ok) throw new Error(`NVD: ${res.status}`);
   const json = await res.json();

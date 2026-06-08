@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { NextResponse } from "next/server";
 import { XMLParser } from "fast-xml-parser";
 
@@ -32,7 +34,7 @@ async function fetchFeed(feed: (typeof FEEDS)[number]): Promise<TickerItem[]> {
   const res = await fetch(feed.url, {
     headers: { "User-Agent": "RECON/1.0 (security learning platform)" },
     // 8時間キャッシュ = 1日3回更新相当（朝・昼・夜）。本番では cron で時刻固定する。
-    next: { revalidate: 28800 },
+    next: { revalidate: 300 },
   });
   if (!res.ok) throw new Error(`${feed.source}: ${res.status}`);
   const xml = await res.text();

@@ -21,6 +21,7 @@ type Props = {
   initialAvatar: string | null;
   favTools: FavTool[];
   progress: ProgressRow[];
+  bookmarks: { kind: string; item_id: string }[];
 };
 
 const QUICK = [
@@ -57,6 +58,66 @@ function GearButton({ onClick }: { onClick: () => void }) {
         <circle cx="12" cy="12" r="3"/>
       </svg>
     </button>
+  );
+}
+
+function BookmarksSection({ bookmarks }: { bookmarks: { kind: string; item_id: string }[] }) {
+  const articleBookmarks = bookmarks.filter((b) => b.kind === "article");
+  const cveBookmarks = bookmarks.filter((b) => b.kind === "cve");
+
+  if (bookmarks.length === 0) {
+    return (
+      <div style={{ padding: "22px 20px", borderRadius: 14, border: `1px dashed ${C.line2}`, background: C.soft, textAlign: "center", marginBottom: 44 }}>
+        <div style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink2, marginBottom: 10 }}>まだブックマークがありません。</div>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/articles" style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.blue, background: `${C.blue}10`, border: `1px solid ${C.blue}33`, padding: "6px 13px", borderRadius: 8, textDecoration: "none" }}>記事を探す →</Link>
+          <Link href="/cve" style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.pink, background: `${C.pink}10`, border: `1px solid ${C.pink}33`, padding: "6px 13px", borderRadius: 8, textDecoration: "none" }}>CVEを探す →</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginBottom: 44 }}>
+      {/* 記事ブックマーク */}
+      {articleBookmarks.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3, letterSpacing: 0.5, marginBottom: 10 }}>// 記事</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {articleBookmarks.map(({ item_id }) => {
+              const article = ARTICLES.find((a) => a.slug === item_id);
+              if (!article) return null;
+              return (
+                <Link key={item_id} href={`/articles/${item_id}`}
+                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 11, border: `1px solid ${C.line}`, background: C.bg, textDecoration: "none", transition: "border-color 0.18s" }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 2, background: article.c, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, color: C.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{article.title}</div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginTop: 2 }}>{article.fieldName} · {article.level}</div>
+                  </div>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: article.c, flexShrink: 0 }}>→</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* CVEブックマーク */}
+      {cveBookmarks.length > 0 && (
+        <div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3, letterSpacing: 0.5, marginBottom: 10 }}>// CVE</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {cveBookmarks.map(({ item_id }) => (
+              <Link key={item_id} href={`/cve/${item_id}`}
+                style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.pink, background: `${C.pink}0d`, border: `1px solid ${C.pink}33`, padding: "6px 12px", borderRadius: 8, textDecoration: "none" }}>
+                {item_id}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -163,7 +224,7 @@ function LearningRecord({ progress }: { progress: ProgressRow[] }) {
   );
 }
 
-export default function ProfileHub({ userId, email, createdAt, initialName, initialBio, initialAvatar, favTools, progress }: Props) {
+export default function ProfileHub({ userId, email, createdAt, initialName, initialBio, initialAvatar, favTools, progress, bookmarks }: Props) {
   const [name, setName] = useState(initialName);
   const [bio, setBio] = useState(initialBio);
   const [avatar, setAvatar] = useState<string | null>(initialAvatar);
@@ -245,6 +306,16 @@ export default function ProfileHub({ userId, email, createdAt, initialName, init
               <Link href="/tools" style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.cyan, textDecoration: "none" }}>ツール集で ★ を付ける →</Link>
             </div>
           )}
+        </Reveal>
+
+        {/* bookmarks */}
+        <Reveal>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 14 }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.blue, letterSpacing: 0.5 }}>📌 ブックマーク</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{bookmarks.length}</span>
+            <div style={{ flex: 1, height: 1, background: C.line }} />
+          </div>
+          <BookmarksSection bookmarks={bookmarks} />
         </Reveal>
 
         {/* learning record */}

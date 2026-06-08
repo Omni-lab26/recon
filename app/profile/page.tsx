@@ -21,6 +21,9 @@ export default async function ProfilePage() {
   const { data: progressRows } = await supabase.from("progress").select("kind, item_id, completed_at").order("completed_at", { ascending: false });
   const progress = (progressRows ?? []).map((r) => ({ kind: String(r.kind), item_id: String(r.item_id), completed_at: String(r.completed_at) }));
 
+  const { data: bookmarkRows } = await supabase.from("bookmarks").select("kind, item_id, created_at").order("created_at", { ascending: false });
+  const bookmarks = (bookmarkRows ?? []).map((r) => ({ kind: String(r.kind), item_id: String(r.item_id) }));
+
   return (
     <ProfileHub
       userId={user.id}
@@ -31,6 +34,7 @@ export default async function ProfilePage() {
       initialAvatar={profile?.avatar_url ?? null}
       favTools={favTools}
       progress={progress}
+      bookmarks={bookmarks}
     />
   );
 }

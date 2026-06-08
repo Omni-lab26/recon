@@ -1,182 +1,167 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { CHALLENGES, CTF_FIELDS, DIFF, type FieldKey, type Difficulty, type Challenge } from "@/lib/ctf-data";
+import { createPortal } from "react-dom";
+import { CTF_PROBLEMS, CAT_INFO, DIFF_INFO, type CtfProblem, type CtfCategory, type CtfDifficulty } from "@/lib/ctf-data";
+import { useProgress } from "@/lib/use-progress";
+import { C } from "@/lib/tokens";
 
-const INK = "#0a0a0b";
-const INK2 = "#52525b";
-const INK3 = "#9a9aa5";
-const LINE = "#ececf1";
-const LINE2 = "#dcdce4";
-const BG = "#ffffff";
-const SOFT = "#fbfbfd";
-const GREEN = "#00b87a";
+/* ── Modal ─────────────────────────────────────────────────── */
+function ProblemModal({ p, onClose }: { p: CtfProblem; onClose: () => void }) {
+  const { isDone, toggle } = useProgress();
+  const [input, setInput] = useState("");
+  const [hintIdx, setHintIdx] = useState(0);
+  const [result, setResult] = useState<"idle" | "ok" | "ng">("idle");
+  const solved = isDone("ctf", p.id);
+  const cat = CAT_INFO[p.category];
+  const diff = DIFF_INFO[p.difficulty];
 
-function DiffBadge({ diff, size = 10 }: { diff: Difficulty; size?: number }) {
-  const d = DIFF[diff];
-  return (
-    <span style={{ whiteSpace: "nowrap", fontFamily: "var(--font-mono)", fontSize: size, fontWeight: 600, color: "#fff", background: d.c, padding: "2px 8px", borderRadius: 5 }}>{d.label}</span>
+  const submit = () => {
+    if (input.trim() === p.flag) {
+      setResult("ok");
+      if (!solved) toggle("ctf", p.id);
+    } else {
+      setResult("ng");
+      setTimeout(() => setResult("idle"), 1500);
+    }
+  };
+
+  return createPortal(
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(10,10,15,0.5)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)", animation: "modalBg 0.2s ease both" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 640, maxHeight: "calc(100vh - 40px)", overflowY: "auto", background: C.bg, borderRadius: 18, boxShadow: "0 30px 80px rgba(10,10,15,0.28)", animation: "modalIn 0.24s cubic-bezier(0.16,1,0.3,1) both" }}>
+        {/* header */}
+        <div style={{ padding: "16px 22px", borderBottom: `1px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: cat.c, background: `${cat.c}0d`, border: `1px solid ${cat.c}33`, padding: "3px 9px", borderRadius: 7 }}>{cat.glyph} {cat.name}</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: diff.c }}>{diff.name}</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{p.points}pts</span>
+            {solved && <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.accent }}>✓ 解答済み</span>}
+          </div>
+          <button onClick={onClose} style={{ background: "transparent", border: "none", cursor: "pointer", color: C.ink3, fontFamily: "var(--font-mono)", fontSize: 16, padding: "2px 8px" }}>✕</button>
+        </div>
+
+        <div style={{ padding: "22px 26px 32px" }}>
+          <h2 style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 24, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 14px" }}>{p.title}</h2>
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: 14.5, color: C.ink, lineHeight: 1.85, margin: "0 0 18px" }}>{p.description}</p>
+
+          {p.body && (
+            <div style={{ background: "#0c0c0e", borderRadius: 10, padding: "14px 16px", marginBottom: 18, overflowX: "auto" }}>
+              <pre style={{ fontFamily: "var(--font-mono)", fontSize: 12.5, color: "#d6d6e0", lineHeight: 1.7, margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{p.body}</pre>
+            </div>
+          )}
+
+          {/* hints */}
+          {hintIdx > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              {p.hints.slice(0, hintIdx).map((h, i) => (
+                <div key={i} style={{ display: "flex", gap: 9, padding: "9px 12px", borderRadius: 9, background: `${C.amber}0a`, border: `1px solid ${C.amber}33`, marginBottom: 6 }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.amber, flexShrink: 0 }}>ヒント {i + 1}</span>
+                  <span style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink, lineHeight: 1.6 }}>{h}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {hintIdx < p.hints.length && (
+            <button onClick={() => setHintIdx((n) => n + 1)} style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.amber, background: `${C.amber}0a`, border: `1px solid ${C.amber}33`, borderRadius: 8, padding: "7px 13px", cursor: "pointer", marginBottom: 18 }}>
+              ヒントを見る ({hintIdx}/{p.hints.length})
+            </button>
+          )}
+
+          {/* flag input */}
+          {result === "ok" || solved ? (
+            <div style={{ padding: "16px 18px", borderRadius: 12, background: `${C.accent}0d`, border: `1px solid ${C.accent}44` }}>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 14, color: C.accent, fontWeight: 600 }}>✓ 正解！ +{p.points}pts</div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.accent, marginTop: 6 }}>{p.flag}</div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 10 }}>
+              <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && submit()}
+                placeholder="RECON{...}" style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 13.5, padding: "11px 14px", borderRadius: 10, border: `1px solid ${result === "ng" ? C.pink : C.line2}`, background: C.bg, color: C.ink, outline: "none", transition: "border-color 0.2s" }} />
+              <button onClick={submit} style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 13.5, padding: "11px 18px", borderRadius: 10, background: `linear-gradient(115deg, ${C.accent}, ${C.cyan})`, color: "#fff", border: "none", cursor: "pointer" }}>
+                提出
+              </button>
+            </div>
+          )}
+          {result === "ng" && <div style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: C.pink, marginTop: 8 }}>✗ 不正解。もう一度試せ。</div>}
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
-function GridCard({ ch }: { ch: Challenge }) {
+/* ── Card ───────────────────────────────────────────────────── */
+function ProblemCard({ p, onOpen }: { p: CtfProblem; onOpen: () => void }) {
+  const { isDone } = useProgress();
   const [h, setH] = useState(false);
-  const F = CTF_FIELDS[ch.field];
+  const solved = isDone("ctf", p.id);
+  const cat = CAT_INFO[p.category];
+  const diff = DIFF_INFO[p.difficulty];
+
   return (
-    <div
-      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ position: "relative", borderRadius: 14, border: `1px solid ${h ? F.c + "66" : LINE}`, background: BG, padding: "16px 16px 14px", cursor: "pointer", transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${F.c}1f` : "0 1px 2px rgba(10,10,15,0.03)", overflow: "hidden" }}
-    >
-      {ch.solved && <div aria-hidden style={{ position: "absolute", top: 0, right: 0, width: 0, height: 0, borderStyle: "solid", borderWidth: "0 34px 34px 0", borderColor: `transparent ${GREEN} transparent transparent` }} />}
-      {ch.solved && <span style={{ position: "absolute", top: 2, right: 4, color: "#fff", fontSize: 11, fontWeight: 700 }}>✓</span>}
-      <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 12 }}>
-        <span style={{ width: 32, height: 32, borderRadius: 9, background: `${F.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 14, color: F.c }}>{F.glyph}</span>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3 }}>{F.name}</span>
+    <button onClick={onOpen} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
+      style={{ width: "100%", textAlign: "left", padding: "18px 18px", borderRadius: 14, border: `1px solid ${h || solved ? cat.c + "55" : C.line}`, background: C.bg, cursor: "pointer", transition: "all 0.2s", transform: h ? "translateY(-2px)" : "none", boxShadow: h ? `0 12px 28px ${cat.c}1f` : "0 1px 2px rgba(10,10,15,0.03)", position: "relative" }}>
+      {solved && <span style={{ position: "absolute", top: 12, right: 12, fontFamily: "var(--font-mono)", fontSize: 11, color: "#fff", background: C.accent, padding: "2px 8px", borderRadius: 6 }}>✓ SOLVED</span>}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+        <span style={{ width: 34, height: 34, borderRadius: 9, background: `${cat.c}14`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 14, color: cat.c }}>{cat.glyph}</span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: cat.c }}>{cat.name}</span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: diff.c, background: `${diff.c}0d`, border: `1px solid ${diff.c}33`, padding: "2px 7px", borderRadius: 6 }}>{diff.name}</span>
+        <span style={{ marginLeft: "auto", fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3 }}>{p.points}pts</span>
       </div>
-      <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 16, color: INK, letterSpacing: "-0.01em", marginBottom: 10 }}>{ch.title}</div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <DiffBadge diff={ch.diff} />
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: INK2 }}><b style={{ color: INK }}>{ch.pts}</b> pts</span>
-      </div>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: INK3, marginTop: 8, display: "flex", alignItems: "center", gap: 5 }}>
-        <span style={{ width: 5, height: 5, borderRadius: "50%", background: GREEN }} />{ch.solves.toLocaleString()} solves
-      </div>
-    </div>
+      <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15.5, color: C.ink, marginBottom: 6 }}>{p.title}</div>
+      <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: C.ink2, lineHeight: 1.6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{p.description}</div>
+    </button>
   );
 }
 
-// 横スクロール時に左端固定するタイトルセル
-const stickyTitle: React.CSSProperties = {
-  position: "sticky", left: 0, zIndex: 2, background: BG,
-  boxShadow: "2px 0 0 " + LINE,
-};
+/* ── Main ───────────────────────────────────────────────────── */
+const CATS = Object.keys(CAT_INFO) as CtfCategory[];
+const DIFFS = Object.keys(DIFF_INFO) as CtfDifficulty[];
 
 export default function CTFList() {
-  const [view, setView] = useState<"table" | "grid">("table");
-  const [field, setField] = useState<FieldKey | "all">("all");
-  const [diff, setDiff] = useState<Difficulty | "all">("all");
-  const [onlyUnsolved, setOnlyUnsolved] = useState(false);
+  const [cat, setCat] = useState<CtfCategory | "all">("all");
+  const [diff, setDiff] = useState<CtfDifficulty | "all">("all");
+  const [active, setActive] = useState<CtfProblem | null>(null);
+  const { isDone } = useProgress();
 
-  const filtered = useMemo(
-    () =>
-      CHALLENGES.filter(
-        (c) =>
-          (field === "all" || c.field === field) &&
-          (diff === "all" || c.diff === diff) &&
-          (!onlyUnsolved || !c.solved)
-      ),
-    [field, diff, onlyUnsolved]
-  );
-
-  const byField = useMemo(() => {
-    const m: Partial<Record<FieldKey, Challenge[]>> = {};
-    filtered.forEach((c) => {
-      (m[c.field] = m[c.field] || []).push(c);
-    });
-    return m;
-  }, [filtered]);
+  const list = useMemo(() => CTF_PROBLEMS.filter((p) => (cat === "all" || p.category === cat) && (diff === "all" || p.difficulty === diff)), [cat, diff]);
+  const solvedCount = CTF_PROBLEMS.reduce((acc, p) => acc + (isDone("ctf", p.id) ? 1 : 0), 0);
+  const totalPts = CTF_PROBLEMS.filter((p) => isDone("ctf", p.id)).reduce((acc, p) => acc + p.points, 0);
 
   const pill = (active: boolean, c: string): React.CSSProperties => ({
-    fontFamily: "var(--font-mono)", fontSize: 12, padding: "7px 13px", borderRadius: 9, cursor: "pointer",
-    border: `1px solid ${active ? c : LINE2}`, background: active ? c : BG, color: active ? "#fff" : INK2,
-    transition: "all 0.2s", fontWeight: active ? 600 : 400, whiteSpace: "nowrap",
+    fontFamily: "var(--font-mono)", fontSize: 11.5, padding: "6px 13px", borderRadius: 100, cursor: "pointer",
+    border: `1px solid ${active ? c : C.line2}`, background: active ? `${c}10` : C.bg, color: active ? c : C.ink2, transition: "all 0.15s",
   });
 
   return (
     <div>
-      {/* filter bar (always on) */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, borderRadius: 14, border: `1px solid ${LINE}`, background: SOFT }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, width: 44 }}>分野</span>
-          <button style={pill(field === "all", INK)} onClick={() => setField("all")}>all</button>
-          {(Object.keys(CTF_FIELDS) as FieldKey[]).map((k) => (
-            <button key={k} style={pill(field === k, CTF_FIELDS[k].c)} onClick={() => setField(k)}>{CTF_FIELDS[k].glyph} {CTF_FIELDS[k].name}</button>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3, width: 44 }}>難易度</span>
-          <button style={pill(diff === "all", INK)} onClick={() => setDiff("all")}>all</button>
-          {(Object.keys(DIFF) as Difficulty[]).map((k) => (
-            <button key={k} style={pill(diff === k, DIFF[k].c)} onClick={() => setDiff(k)}>{DIFF[k].label}</button>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 10, alignItems: "center", borderTop: `1px solid ${LINE}`, paddingTop: 10, flexWrap: "wrap" }}>
-          <button style={pill(onlyUnsolved, GREEN)} onClick={() => setOnlyUnsolved((v) => !v)}>{onlyUnsolved ? "☑" : "☐"} 未解決のみ</button>
-          {/* table / grid toggle */}
-          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3 }}>{filtered.length} 問</span>
-            <div style={{ display: "flex", background: BG, border: `1px solid ${LINE2}`, borderRadius: 9, padding: 3, gap: 3 }}>
-              {(["table", "grid"] as const).map((v) => (
-                <button
-                  key={v}
-                  onClick={() => setView(v)}
-                  style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, padding: "5px 11px", borderRadius: 7, border: "none", cursor: "pointer", background: view === v ? INK : "transparent", color: view === v ? "#fff" : INK2, transition: "all 0.2s" }}
-                >
-                  {v === "table" ? "≣ 表" : "▦ グリッド"}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* stats */}
+      <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.accent }}>{solvedCount}/{CTF_PROBLEMS.length} 解答済み</span>
+        {totalPts > 0 && <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: C.amber }}>{totalPts}pts 獲得</span>}
       </div>
 
-      {/* ===== TABLE (default) — horizontal swipe on mobile, sticky title ===== */}
-      {view === "table" && (
-        <div style={{ marginTop: 22, border: `1px solid ${LINE}`, borderRadius: 14, overflow: "hidden" }}>
-          <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-            <div style={{ minWidth: 640 }}>
-              {/* header */}
-              <div style={{ display: "grid", gridTemplateColumns: "minmax(180px,1fr) 120px 110px 80px 110px 110px", padding: "11px 0", background: SOFT, borderBottom: `1px solid ${LINE}`, fontFamily: "var(--font-mono)", fontSize: 10.5, color: INK3 }}>
-                <span style={{ ...stickyTitle, background: SOFT, boxShadow: "2px 0 0 " + LINE, padding: "0 16px" }}>TITLE</span>
-                <span style={{ padding: "0 8px" }}>FIELD</span>
-                <span style={{ padding: "0 8px" }}>DIFFICULTY</span>
-                <span style={{ padding: "0 8px" }}>PTS</span>
-                <span style={{ padding: "0 8px" }}>SOLVES</span>
-                <span style={{ padding: "0 8px" }}>STATUS</span>
-              </div>
-              {/* rows */}
-              {filtered.map((ch) => {
-                const F = CTF_FIELDS[ch.field];
-                return (
-                  <div key={ch.id} className="ctf-row" style={{ display: "grid", gridTemplateColumns: "minmax(180px,1fr) 120px 110px 80px 110px 110px", padding: "13px 0", borderBottom: `1px solid ${LINE}`, alignItems: "center", cursor: "pointer" }}>
-                    <span style={{ ...stickyTitle, padding: "0 16px", fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, color: INK }}>{ch.title}</span>
-                    <span style={{ padding: "0 8px", fontFamily: "var(--font-mono)", fontSize: 12, color: F.c, whiteSpace: "nowrap" }}>{F.glyph} {F.name}</span>
-                    <span style={{ padding: "0 8px" }}><DiffBadge diff={ch.diff} size={9} /></span>
-                    <span style={{ padding: "0 8px", fontFamily: "var(--font-mono)", fontSize: 12.5, color: INK }}>{ch.pts}</span>
-                    <span style={{ padding: "0 8px", fontFamily: "var(--font-mono)", fontSize: 12, color: INK2 }}>{ch.solves.toLocaleString()}</span>
-                    <span style={{ padding: "0 8px", fontFamily: "var(--font-mono)", fontSize: 11, color: ch.solved ? GREEN : INK3, whiteSpace: "nowrap" }}>{ch.solved ? "✓ solved" : "— unsolved"}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          {filtered.length === 0 && <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: INK3, padding: "24px 16px", textAlign: "center" }}>該当なし</div>}
+      {/* filters */}
+      <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 10 }}>
+        <button style={pill(cat === "all", C.ink)} onClick={() => setCat("all")}>すべて</button>
+        {CATS.map((c) => <button key={c} style={pill(cat === c, CAT_INFO[c].c)} onClick={() => setCat(c)}>{CAT_INFO[c].name}</button>)}
+      </div>
+      <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 24 }}>
+        <button style={pill(diff === "all", C.ink)} onClick={() => setDiff("all")}>全難易度</button>
+        {DIFFS.map((d) => <button key={d} style={pill(diff === d, DIFF_INFO[d].c)} onClick={() => setDiff(d)}>{DIFF_INFO[d].name}</button>)}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+        {list.map((p) => <ProblemCard key={p.id} p={p} onOpen={() => setActive(p)} />)}
+      </div>
+
+      {list.length === 0 && (
+        <div style={{ textAlign: "center", padding: "40px 20px", fontFamily: "var(--font-sans)", fontSize: 14, color: C.ink3 }}>
+          該当する問題がありません。
         </div>
       )}
 
-      {/* ===== GRID (toggle) — grouped by field ===== */}
-      {view === "grid" && (
-        <div style={{ marginTop: 22 }}>
-          {Object.keys(byField).length === 0 && <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: INK3, padding: "24px 0", textAlign: "center" }}>該当なし</div>}
-          {(Object.keys(byField) as FieldKey[]).map((fk) => {
-            const F = CTF_FIELDS[fk];
-            const list = byField[fk]!;
-            return (
-              <div key={fk} style={{ marginBottom: 26 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 12 }}>
-                  <span style={{ width: 28, height: 28, borderRadius: 8, background: `${F.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 13, color: F.c }}>{F.glyph}</span>
-                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 17, color: INK }}>{F.name}</span>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: INK3 }}>{list.length}</span>
-                  <div style={{ flex: 1, height: 1, background: LINE }} />
-                </div>
-                <div className="ctf-grid">
-                  {list.map((ch) => <GridCard key={ch.id} ch={ch} />)}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {active && <ProblemModal p={active} onClose={() => setActive(null)} />}
     </div>
   );
 }

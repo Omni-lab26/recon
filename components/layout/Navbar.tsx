@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ReconLogo from "@/components/brand/ReconLogo";
 import AuthMenu from "@/components/layout/AuthMenu";
+import { SearchPalette } from "@/components/ui/SearchPalette";
 import { C } from "@/lib/tokens";
 
 const LINKS: [string, string][] = [
@@ -76,6 +77,11 @@ export default function Navbar() {
               </Link>
             ))}
           </div>
+          {/* search button */}
+          <button onClick={() => { setMobileOpen(false); document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true })); }}
+            style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-mono)", fontSize: 12, color: C.ink3, background: C.soft, border: `1px solid ${C.line2}`, borderRadius: 8, padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap" }}>
+            <span>⌘K</span>
+          </button>
           <AuthMenu />
         </div>
 
@@ -112,6 +118,7 @@ export default function Navbar() {
           ))}
         </div>
       </div>
+      <SearchPalette />
     </>
   );
 }

@@ -148,7 +148,7 @@ export default function OGImage() {
             letterSpacing: "1px",
           }}
         >
-          recon.tech
+          recon-brown.vercel.app
         </div>
       </div>
 

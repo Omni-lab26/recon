@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/auth/", "/profile", "/dashboard", "/settings", "/forgot-password", "/reset-password"],
       },
     ],
-    sitemap: "https://recon.tech/sitemap.xml",
+    sitemap: "https://recon-brown.vercel.app/sitemap.xml",
   };
 }

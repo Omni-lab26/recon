@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools-data";
 import { ARTICLES } from "@/lib/articles-data";
 
-const BASE = "https://recon.tech";
+const BASE = "https://recon-brown.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swa
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://recon.tech"),
+  metadataBase: new URL("https://recon-brown.vercel.app"),
   title: {
     default: "RECON — Reveal Every Crack, Own Networks.",
     template: "%s · RECON",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RECON — Reveal Every Crack, Own Networks.",
     description: "Learn by breaking. Master by defending. 記事・CTF・ツール・ラボをひとつの場所で。",
-    url: "https://recon.tech",
+    url: "https://recon-brown.vercel.app",
     siteName: "RECON",
     locale: "ja_JP",
     type: "website",

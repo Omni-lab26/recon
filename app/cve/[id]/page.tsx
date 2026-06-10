@@ -162,9 +162,6 @@ export default async function CveDetailPage({ params }: { params: { id: string }
               </div>
               <h1 style={{ fontFamily: "var(--font-mono)", fontWeight: 600, fontSize: 28, color: C.ink, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "0 0 6px" }}>{cve.id}</h1>
 
-              {/* JP summary placeholder */}
-              <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink3, fontStyle: "italic", marginBottom: 6 }}>// AIによる日本語解説は近日対応</div>
-
               {/* summary */}
               <Heading>// 概要(原文)</Heading>
               <p style={{ fontFamily: "var(--font-sans)", fontSize: 15, color: C.ink, lineHeight: 1.85, margin: 0 }}>{cve.summary || "(概要なし)"}</p>

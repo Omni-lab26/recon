@@ -47,7 +47,7 @@ function HeroStory({ n }: { n: TickerItem }) {
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3 }}>今日のトップ脅威</span>
         </div>
         <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 24, color: C.ink, letterSpacing: "-0.02em", lineHeight: 1.3, marginBottom: 12 }}>{n.title}</div>
-        <div style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink3, lineHeight: 1.6, marginBottom: 16, fontStyle: "italic" }}>// 日本語要約は近日対応（AI生成予定）</div>
+        <div style={{ fontFamily: "var(--font-sans)", fontSize: 13.5, color: C.ink3, lineHeight: 1.6, marginBottom: 16 }}>原文(英語)は出典元の CISA 公式ページで確認できます。下のリンクから全文をどうぞ。</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, borderTop: `1px solid ${C.line}`, paddingTop: 14 }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: s.c }}>{n.source}</span>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{relTime(n.date)} {fmtTime(n.date)} · 出典を読む ↗</span>
@@ -69,7 +69,6 @@ function MidCard({ n }: { n: TickerItem }) {
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginLeft: "auto" }}>{relTime(n.date)} {fmtTime(n.date)}</span>
       </div>
       <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15.5, color: C.ink, letterSpacing: "-0.01em", lineHeight: 1.45, marginBottom: 10 }}>{n.title}</div>
-      <div style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: C.ink3, lineHeight: 1.55, flex: 1, fontStyle: "italic" }}>// 要約は近日対応</div>
       <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.line}`, display: "flex", justifyContent: "flex-end" }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: s.c, opacity: h ? 1 : 0.5, transition: "opacity 0.2s" }}>読む ↗</span>
       </div>
@@ -228,7 +227,7 @@ export default function NewsBoard() {
       )}
 
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: C.ink3, textAlign: "center", marginTop: 28 }}>
-        // 1日3回(朝・昼・夜)更新 · 日本語要約はAIで近日対応 · 詳細は出典元(CISA公式)へ · <a href="/glossary" style={{ color: C.blue, textDecoration: "none" }}>? 用語を学ぶ</a>
+        // 1日3回(朝・昼・夜)更新 · 出典元(CISA公式)で全文を確認 · <a href="/glossary" style={{ color: C.blue, textDecoration: "none" }}>? 用語を学ぶ</a>
       </div>
       </>
       )}

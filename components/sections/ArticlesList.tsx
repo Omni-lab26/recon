@@ -20,7 +20,7 @@ function ArticleCard({ a }: { a: (typeof ARTICLES)[number] }) {
   const h = tilt.hovered;
 
   return (
-    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 13, border: `1px solid ${h ? a.c + "55" : C.line}`, background: C.bg, overflow: "hidden" })}>
+    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 13, border: `1px solid ${h ? a.c + "55" : C.line}`, background: C.bg, overflow: "clip" })}>
       {tilt.glow}
       <Link href={`/articles/${a.slug}`}
         style={{ display: "block", padding: "16px 18px 12px", textDecoration: "none", position: "relative", zIndex: 1 }}>
@@ -51,17 +51,25 @@ function FieldCard({ fieldKey, open, onToggle }: { fieldKey: string; open: boole
   const h = tilt.hovered;
 
   return (
-    <div style={{ borderRadius: 16, border: `1px solid ${open ? f.c + "55" : C.line}`, background: C.bg, overflow: "hidden", transition: "border-color 0.3s" }}>
+    <div
+      {...(!open ? tilt.handlers : {})}
+      style={{
+        borderRadius: 16,
+        border: `1px solid ${open ? f.c + "55" : h ? f.c + "33" : C.line}`,
+        background: C.bg,
+        overflow: "clip",
+        transition: "border-color 0.3s",
+        ...(!open ? tilt.style({}) : {}),
+      }}>
 
-      {/* ヘッダー — ティルトは閉じている時のみ */}
+      {/* ヘッダー */}
       <div
-        {...(!open ? tilt.handlers : {})}
         onClick={onToggle}
         role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && onToggle()}
         style={{
-          ...(!open ? tilt.style({}) : {}),
           position: "relative", padding: "20px 22px", cursor: "pointer",
-          overflow: "hidden", background: open ? `${f.c}08` : C.bg,
+          overflow: "clip", background: open ? `${f.c}08` : C.bg,
+          transition: "background 0.3s",
         }}>
         {!open && tilt.glow}
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 14 }}>

@@ -41,7 +41,7 @@ function CveCard({ c, bookmarked }: { c: CveItem; bookmarked: boolean }) {
   const tilt = useTilt(edge);
   const h = tilt.hovered;
   return (
-    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, overflow: "hidden" })}>
+    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, overflow: "clip" })}>
       {tilt.glow}
       <a href={`/cve/${c.id}`}
         style={{ display: "block", padding: "16px 16px 14px", textDecoration: "none", position: "relative", zIndex: 1 }}>

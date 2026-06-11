@@ -102,7 +102,7 @@ function ProblemCard({ p, onOpen }: { p: CtfProblem; onOpen: () => void }) {
 
   return (
     <button onClick={onOpen} {...tilt.handlers}
-      style={tilt.style({ width: "100%", textAlign: "left", padding: "18px 18px", borderRadius: 14, border: `1px solid ${h || solved ? cat.c + "55" : C.line}`, background: C.bg, cursor: "pointer", position: "relative", overflow: "hidden" })}>
+      style={tilt.style({ width: "100%", textAlign: "left", padding: "18px 18px", borderRadius: 14, border: `1px solid ${h || solved ? cat.c + "55" : C.line}`, background: C.bg, cursor: "pointer", position: "relative", overflow: "clip" })}>
       {tilt.glow}
       {solved && <span style={{ position: "absolute", top: 12, right: 12, zIndex: 2, fontFamily: "var(--font-mono)", fontSize: 11, color: "#fff", background: C.accent, padding: "2px 8px", borderRadius: 6 }}>✓ SOLVED</span>}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>

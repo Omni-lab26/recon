@@ -37,7 +37,6 @@ export function useTilt(color: string, opts?: { max?: number; lift?: number; glo
   // ベーススタイルに 3D 変形を合成する
   const style = (base: React.CSSProperties = {}): React.CSSProperties => ({
     ...base,
-    transformStyle: "preserve-3d",
     transform: `perspective(800px) rotateX(${s.ry}deg) rotateY(${s.rx}deg) translateY(${s.h ? -lift : 0}px)`,
     transition: "transform 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s",
     boxShadow: s.h ? `0 18px 44px ${color}24, 0 6px 16px rgba(10,10,15,0.05)` : (base.boxShadow ?? "0 1px 2px rgba(10,10,15,0.03)"),

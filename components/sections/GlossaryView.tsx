@@ -12,7 +12,7 @@ function Tile({ t, onOpen, active }: { t: Term; onOpen: (id: string) => void; ac
   const h = tilt.hovered;
   return (
     <button id={`tile-${t.id}`} {...tilt.handlers} onClick={() => onOpen(t.id)}
-      style={tilt.style({ position: "relative", textAlign: "left", padding: "12px 14px 12px 18px", borderRadius: 10, background: active ? `${cat.c}06` : C.bg, border: `1px solid ${active ? cat.c + "55" : h ? cat.c + "44" : C.line}`, cursor: "pointer", overflow: "hidden", display: "block", fontFamily: "inherit" })}>
+      style={tilt.style({ position: "relative", textAlign: "left", padding: "12px 14px 12px 18px", borderRadius: 10, background: active ? `${cat.c}06` : C.bg, border: `1px solid ${active ? cat.c + "55" : h ? cat.c + "44" : C.line}`, cursor: "pointer", overflow: "clip", display: "block", fontFamily: "inherit" })}>
       {tilt.glow}
       <span aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 3, background: cat.c, opacity: h || active ? 1 : 0.5, transition: "opacity 0.2s", zIndex: 1 }} />
       <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, color: C.ink, letterSpacing: "-0.01em", lineHeight: 1.25, marginBottom: 3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", position: "relative", zIndex: 1 }}>{t.name}</div>

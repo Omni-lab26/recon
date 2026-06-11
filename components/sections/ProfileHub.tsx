@@ -39,7 +39,7 @@ function QuickCard({ q }: { q: (typeof QUICK)[number] }) {
   const h = tilt.hovered;
   return (
     <Link href={q.href} {...tilt.handlers}
-      style={tilt.style({ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 13, border: `1px solid ${h ? q.c + "55" : C.line}`, background: C.bg, textDecoration: "none", overflow: "hidden", position: "relative" })}>
+      style={tilt.style({ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 13, border: `1px solid ${h ? q.c + "55" : C.line}`, background: C.bg, textDecoration: "none", overflow: "clip", position: "relative" })}>
       {tilt.glow}
       <span style={{ width: 36, height: 36, borderRadius: 10, background: `${q.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 16, color: q.c, position: "relative", zIndex: 1 }}>{q.glyph}</span>
       <div style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 1 }}>

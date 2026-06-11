@@ -49,7 +49,7 @@ function ToolCard({ t, isFav, toggleFav }: { t: Tool; isFav: boolean; toggleFav:
 
   return (
     <div {...(open ? {} : tilt.handlers)}
-      style={tilt.style({ position: "relative", borderRadius: 16, background: BG, border: `1px solid ${open ? cat.c + "88" : h ? cat.c + "55" : LINE}`, padding: "18px 18px 16px", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", ...(open ? { transform: "none", boxShadow: `0 18px 44px ${cat.c}22` } : {}) })}>
+      style={tilt.style({ position: "relative", borderRadius: 16, background: BG, border: `1px solid ${open ? cat.c + "88" : h ? cat.c + "55" : LINE}`, padding: "18px 18px 16px", overflow: "clip", display: "flex", flexDirection: "column", height: "100%", ...(open ? { transform: "none", boxShadow: `0 18px 44px ${cat.c}22` } : {}) })}>
       {!open && tilt.glow}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <span style={{ width: 38, height: 38, borderRadius: 10, background: `${cat.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 16, color: cat.c }}>{cat.glyph}</span>

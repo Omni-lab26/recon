@@ -41,7 +41,7 @@ function HeroStory({ n }: { n: TickerItem }) {
   const h = tilt.hovered;
   return (
     <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" {...tilt.handlers}
-      style={tilt.style({ position: "relative", display: "block", borderRadius: 20, overflow: "hidden", border: `1px solid ${h ? s.c + "88" : s.c + "44"}`, background: `linear-gradient(135deg, ${s.c}0e, transparent 60%)`, padding: "28px 28px", textDecoration: "none" })}>
+      style={tilt.style({ position: "relative", display: "block", borderRadius: 20, overflow: "clip", border: `1px solid ${h ? s.c + "88" : s.c + "44"}`, background: `linear-gradient(135deg, ${s.c}0e, transparent 60%)`, padding: "28px 28px", textDecoration: "none" })}>
       <div aria-hidden style={{ position: "absolute", top: "-30%", right: "-8%", width: 360, height: 320, background: `radial-gradient(circle, ${s.c}22, transparent 65%)`, filter: "blur(45px)" }} />
       <div style={{ position: "relative", zIndex: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
@@ -65,7 +65,7 @@ function MidCard({ n }: { n: TickerItem }) {
   const h = tilt.hovered;
   return (
     <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" {...tilt.handlers}
-      style={tilt.style({ display: "flex", flexDirection: "column", padding: "18px 18px", borderRadius: 16, border: `1px solid ${h ? s.c + "66" : C.line}`, background: C.bg, textDecoration: "none", height: "100%", overflow: "hidden", position: "relative" })}>
+      style={tilt.style({ display: "flex", flexDirection: "column", padding: "18px 18px", borderRadius: 16, border: `1px solid ${h ? s.c + "66" : C.line}`, background: C.bg, textDecoration: "none", height: "100%", overflow: "clip", position: "relative" })}>
       {tilt.glow}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 11, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 9.5, fontWeight: 700, color: "#fff", background: s.c, padding: "2px 8px", borderRadius: 5 }}>{s.t}</span>

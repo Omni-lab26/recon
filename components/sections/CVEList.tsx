@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CveItem, CveSeverity } from "@/app/api/cve/route";
 import { BookmarkButton } from "@/components/ui/BookmarkButton";
 import { useBookmarks } from "@/lib/use-bookmarks";
+import { useTilt } from "@/lib/use-tilt";
 import { C } from "@/lib/tokens";
 
 const SEV: Record<Exclude<CveSeverity, "none">, { c: string; t: string; jp: string; range: string }> = {
@@ -34,14 +35,16 @@ function fmtDate(iso: string | null): string {
 }
 
 function CveCard({ c, bookmarked }: { c: CveItem; bookmarked: boolean }) {
-  const [h, setH] = useState(false);
   const { toggle } = useBookmarks();
   const sv = c.severity === "none" ? null : SEV[c.severity];
   const edge = sv?.c ?? C.ink3;
+  const tilt = useTilt(edge);
+  const h = tilt.hovered;
   return (
-    <div style={{ position: "relative", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${edge}1f` : "0 1px 2px rgba(10,10,15,0.03)", overflow: "hidden" }}>
-      <a href={`/cve/${c.id}`} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-        style={{ display: "block", padding: "16px 16px 14px", textDecoration: "none" }}>
+    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 14, border: `1px solid ${h ? edge + "66" : C.line}`, background: C.bg, overflow: "hidden" })}>
+      {tilt.glow}
+      <a href={`/cve/${c.id}`}
+        style={{ display: "block", padding: "16px 16px 14px", textDecoration: "none", position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10, gap: 8 }}>
           <CVSSBadge score={c.cvss} s={c.severity} />
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -58,7 +61,7 @@ function CveCard({ c, bookmarked }: { c: CveItem; bookmarked: boolean }) {
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3, marginTop: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.product}</div>
       </a>
       <button onClick={(e) => { e.stopPropagation(); toggle("cve", c.id); }}
-        title={bookmarked ? "ブックマークを外す" : "保存"} style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: 7, border: `1px solid ${bookmarked ? C.amber : C.line2}`, background: bookmarked ? `${C.amber}12` : "transparent", color: bookmarked ? C.amber : C.ink3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, transition: "all 0.18s" }}>
+        title={bookmarked ? "ブックマークを外す" : "保存"} style={{ position: "absolute", top: 10, right: 10, zIndex: 2, width: 28, height: 28, borderRadius: 7, border: `1px solid ${bookmarked ? C.amber : C.line2}`, background: bookmarked ? `${C.amber}12` : "transparent", color: bookmarked ? C.amber : C.ink3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, transition: "all 0.18s" }}>
         ★
       </button>
     </div>

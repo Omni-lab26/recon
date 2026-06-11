@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ARTICLES } from "@/lib/articles-data";
 import { useProgress } from "@/lib/use-progress";
 import { useBookmarks } from "@/lib/use-bookmarks";
+import { useTilt } from "@/lib/use-tilt";
 import { BookmarkButton } from "@/components/ui/BookmarkButton";
 import { C } from "@/lib/tokens";
 
@@ -12,11 +13,13 @@ import { C } from "@/lib/tokens";
 const FIELDS = Array.from(new Map(ARTICLES.map((a) => [a.field, { key: a.field, name: a.fieldName, c: a.c }])).values());
 
 function Card({ a, done, bookmarked }: { a: (typeof ARTICLES)[number]; done: boolean; bookmarked: boolean }) {
-  const [h, setH] = useState(false);
+  const tilt = useTilt(a.c);
+  const h = tilt.hovered;
   return (
-    <div style={{ position: "relative", borderRadius: 15, border: `1px solid ${h ? a.c + "55" : C.line}`, background: C.bg, transition: "all 0.2s", transform: h ? "translateY(-2px)" : "none", boxShadow: h ? `0 12px 30px ${a.c}1c` : "0 1px 2px rgba(10,10,15,0.03)" }}>
-      <Link href={`/articles/${a.slug}`} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-        style={{ display: "block", padding: "20px 20px 14px", textDecoration: "none" }}>
+    <div {...tilt.handlers} style={tilt.style({ position: "relative", borderRadius: 15, border: `1px solid ${h ? a.c + "55" : C.line}`, background: C.bg, overflow: "hidden" })}>
+      {tilt.glow}
+      <Link href={`/articles/${a.slug}`}
+        style={{ display: "block", padding: "20px 20px 14px", textDecoration: "none", position: "relative", zIndex: 1 }}>
         {done && (
           <span title="読了済み" style={{ position: "absolute", top: 14, right: 48, width: 22, height: 22, borderRadius: "50%", background: a.c, color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700 }}>✓</span>
         )}
@@ -29,11 +32,11 @@ function Card({ a, done, bookmarked }: { a: (typeof ARTICLES)[number]; done: boo
         <div style={{ fontFamily: "var(--font-sans)", fontSize: 13, color: C.ink2, lineHeight: 1.6 }}>{a.summary}</div>
         <div style={{ marginTop: 14, fontFamily: "var(--font-mono)", fontSize: 11, color: a.c, opacity: h ? 1 : 0.5, transition: "opacity 0.2s" }}>{done ? "もう一度読む →" : "読む →"}</div>
       </Link>
-      <div style={{ padding: "0 12px 12px", display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ padding: "0 12px 12px", display: "flex", justifyContent: "flex-end", position: "relative", zIndex: 1 }}>
         <BookmarkButton kind="article" id={a.slug} />
       </div>
       {/* ★ bookmark indicator in corner */}
-      {bookmarked && <span style={{ position: "absolute", top: 12, right: 12, fontFamily: "var(--font-mono)", fontSize: 13, color: "#ff9f1c" }}>★</span>}
+      {bookmarked && <span style={{ position: "absolute", top: 12, right: 12, zIndex: 2, fontFamily: "var(--font-mono)", fontSize: 13, color: "#ff9f1c" }}>★</span>}
     </div>
   );
 }

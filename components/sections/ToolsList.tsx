@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { TOOLS, TOOL_CATS, type ToolCatKey, type Tool } from "@/lib/tools-data";
 import { useToolFavorites } from "@/lib/use-tool-favorites";
+import { useTilt } from "@/lib/use-tilt";
 
 const INK = "#0a0a0b";
 const INK2 = "#52525b";
@@ -41,13 +42,15 @@ function CmdLine({ cmd }: { cmd: string }) {
 function ToolCard({ t, isFav, toggleFav }: { t: Tool; isFav: boolean; toggleFav: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"basic" | "advanced">("basic");
-  const [h, setH] = useState(false);
   const cat = TOOL_CATS[t.cat];
+  const tilt = useTilt(cat.c);
   const cmds = tab === "basic" ? t.basic : t.advanced;
+  const h = tilt.hovered;
 
   return (
-    <div onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ position: "relative", borderRadius: 16, background: BG, border: `1px solid ${open ? cat.c + "88" : h ? cat.c + "55" : LINE}`, padding: "18px 18px 16px", overflow: "hidden", transition: "border-color 0.3s, box-shadow 0.3s, transform 0.3s", transform: h && !open ? "translateY(-3px)" : "none", boxShadow: open ? `0 18px 44px ${cat.c}22` : h ? `0 14px 32px ${cat.c}18` : "0 1px 2px rgba(10,10,15,0.03)", display: "flex", flexDirection: "column", height: "100%" }}>
+    <div {...(open ? {} : tilt.handlers)}
+      style={tilt.style({ position: "relative", borderRadius: 16, background: BG, border: `1px solid ${open ? cat.c + "88" : h ? cat.c + "55" : LINE}`, padding: "18px 18px 16px", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", ...(open ? { transform: "none", boxShadow: `0 18px 44px ${cat.c}22` } : {}) })}>
+      {!open && tilt.glow}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <span style={{ width: 38, height: 38, borderRadius: 10, background: `${cat.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 16, color: cat.c }}>{cat.glyph}</span>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

@@ -8,6 +8,7 @@ import SettingsDrawer from "@/components/profile/SettingsDrawer";
 import { FIELDS } from "@/lib/roadmap-data";
 import { ARTICLES } from "@/lib/articles-data";
 import { computeStreak, roadmapByField, countByKind, recentActivity, relativeTime, ROADMAP_TOTAL, type ProgressRow } from "@/lib/progress";
+import { useTilt } from "@/lib/use-tilt";
 import { C } from "@/lib/tokens";
 
 type FavTool = { id: string; name: string; cat: string; catName: string; c: string };
@@ -34,16 +35,18 @@ const QUICK = [
 ];
 
 function QuickCard({ q }: { q: (typeof QUICK)[number] }) {
-  const [h, setH] = useState(false);
+  const tilt = useTilt(q.c, { max: 6, glowSize: 240 });
+  const h = tilt.hovered;
   return (
-    <Link href={q.href} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 13, border: `1px solid ${h ? q.c + "55" : C.line}`, background: C.bg, textDecoration: "none", transition: "all 0.2s", transform: h ? "translateY(-2px)" : "none", boxShadow: h ? `0 12px 28px ${q.c}1f` : "0 1px 2px rgba(10,10,15,0.03)" }}>
-      <span style={{ width: 36, height: 36, borderRadius: 10, background: `${q.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 16, color: q.c }}>{q.glyph}</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
+    <Link href={q.href} {...tilt.handlers}
+      style={tilt.style({ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 13, border: `1px solid ${h ? q.c + "55" : C.line}`, background: C.bg, textDecoration: "none", overflow: "hidden", position: "relative" })}>
+      {tilt.glow}
+      <span style={{ width: 36, height: 36, borderRadius: 10, background: `${q.c}14`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 16, color: q.c, position: "relative", zIndex: 1 }}>{q.glyph}</span>
+      <div style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 1 }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: C.ink3 }}>~/{q.mono}</div>
         <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 14, color: C.ink }}>{q.label}</div>
       </div>
-      <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: q.c, opacity: h ? 1 : 0.4, transition: "opacity 0.2s" }}>→</span>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: q.c, opacity: h ? 1 : 0.4, transition: "opacity 0.2s", position: "relative", zIndex: 1 }}>→</span>
     </Link>
   );
 }

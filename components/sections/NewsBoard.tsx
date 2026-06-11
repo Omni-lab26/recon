@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { TickerItem } from "@/app/api/feed/route";
+import { useTilt } from "@/lib/use-tilt";
 import { C } from "@/lib/tokens";
 
 const SEV: Record<TickerItem["severity"], { c: string; t: string; jp: string }> = {
@@ -35,11 +36,12 @@ function fmtDate(iso: string): string {
 }
 
 function HeroStory({ n }: { n: TickerItem }) {
-  const [h, setH] = useState(false);
   const s = SEV[n.severity];
+  const tilt = useTilt(s.c, { max: 6 });
+  const h = tilt.hovered;
   return (
-    <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ position: "relative", display: "block", borderRadius: 20, overflow: "hidden", border: `1px solid ${h ? s.c + "88" : s.c + "44"}`, background: `linear-gradient(135deg, ${s.c}0e, transparent 60%)`, padding: "28px 28px", textDecoration: "none", transition: "all 0.3s", boxShadow: h ? `0 18px 44px ${s.c}22` : "0 1px 2px rgba(10,10,15,0.03)" }}>
+    <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" {...tilt.handlers}
+      style={tilt.style({ position: "relative", display: "block", borderRadius: 20, overflow: "hidden", border: `1px solid ${h ? s.c + "88" : s.c + "44"}`, background: `linear-gradient(135deg, ${s.c}0e, transparent 60%)`, padding: "28px 28px", textDecoration: "none" })}>
       <div aria-hidden style={{ position: "absolute", top: "-30%", right: "-8%", width: 360, height: 320, background: `radial-gradient(circle, ${s.c}22, transparent 65%)`, filter: "blur(45px)" }} />
       <div style={{ position: "relative", zIndex: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
@@ -58,18 +60,20 @@ function HeroStory({ n }: { n: TickerItem }) {
 }
 
 function MidCard({ n }: { n: TickerItem }) {
-  const [h, setH] = useState(false);
   const s = SEV[n.severity];
+  const tilt = useTilt(s.c);
+  const h = tilt.hovered;
   return (
-    <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ display: "flex", flexDirection: "column", padding: "18px 18px", borderRadius: 16, border: `1px solid ${h ? s.c + "66" : C.line}`, background: C.bg, textDecoration: "none", transition: "all 0.25s", transform: h ? "translateY(-3px)" : "none", boxShadow: h ? `0 14px 32px ${s.c}20` : "0 1px 2px rgba(10,10,15,0.03)", height: "100%" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 11, flexWrap: "wrap" }}>
+    <a href={n.link || "#"} target="_blank" rel="noopener noreferrer" {...tilt.handlers}
+      style={tilt.style({ display: "flex", flexDirection: "column", padding: "18px 18px", borderRadius: 16, border: `1px solid ${h ? s.c + "66" : C.line}`, background: C.bg, textDecoration: "none", height: "100%", overflow: "hidden", position: "relative" })}>
+      {tilt.glow}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 11, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 9.5, fontWeight: 700, color: "#fff", background: s.c, padding: "2px 8px", borderRadius: 5 }}>{s.t}</span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3 }}>{n.source}</span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: C.ink3, marginLeft: "auto" }}>{relTime(n.date)} {fmtTime(n.date)}</span>
       </div>
-      <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15.5, color: C.ink, letterSpacing: "-0.01em", lineHeight: 1.45, marginBottom: 10 }}>{n.title}</div>
-      <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.line}`, display: "flex", justifyContent: "flex-end" }}>
+      <div style={{ fontFamily: "var(--font-sans)", fontWeight: 600, fontSize: 15.5, color: C.ink, letterSpacing: "-0.01em", lineHeight: 1.45, marginBottom: 10, position: "relative", zIndex: 1 }}>{n.title}</div>
+      <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px solid ${C.line}`, display: "flex", justifyContent: "flex-end", position: "relative", zIndex: 1 }}>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: s.c, opacity: h ? 1 : 0.5, transition: "opacity 0.2s" }}>読む ↗</span>
       </div>
     </a>

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { CTF_PROBLEMS, CAT_INFO, DIFF_INFO, type CtfProblem, type CtfCategory, type CtfDifficulty } from "@/lib/ctf-data";
 import { useProgress } from "@/lib/use-progress";
+import { useTilt } from "@/lib/use-tilt";
 import { C } from "@/lib/tokens";
 
 /* ── Modal ─────────────────────────────────────────────────── */
@@ -93,15 +94,17 @@ function ProblemModal({ p, onClose }: { p: CtfProblem; onClose: () => void }) {
 /* ── Card ───────────────────────────────────────────────────── */
 function ProblemCard({ p, onOpen }: { p: CtfProblem; onOpen: () => void }) {
   const { isDone } = useProgress();
-  const [h, setH] = useState(false);
   const solved = isDone("ctf", p.id);
   const cat = CAT_INFO[p.category];
   const diff = DIFF_INFO[p.difficulty];
+  const tilt = useTilt(cat.c);
+  const h = tilt.hovered;
 
   return (
-    <button onClick={onOpen} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ width: "100%", textAlign: "left", padding: "18px 18px", borderRadius: 14, border: `1px solid ${h || solved ? cat.c + "55" : C.line}`, background: C.bg, cursor: "pointer", transition: "all 0.2s", transform: h ? "translateY(-2px)" : "none", boxShadow: h ? `0 12px 28px ${cat.c}1f` : "0 1px 2px rgba(10,10,15,0.03)", position: "relative" }}>
-      {solved && <span style={{ position: "absolute", top: 12, right: 12, fontFamily: "var(--font-mono)", fontSize: 11, color: "#fff", background: C.accent, padding: "2px 8px", borderRadius: 6 }}>✓ SOLVED</span>}
+    <button onClick={onOpen} {...tilt.handlers}
+      style={tilt.style({ width: "100%", textAlign: "left", padding: "18px 18px", borderRadius: 14, border: `1px solid ${h || solved ? cat.c + "55" : C.line}`, background: C.bg, cursor: "pointer", position: "relative", overflow: "hidden" })}>
+      {tilt.glow}
+      {solved && <span style={{ position: "absolute", top: 12, right: 12, zIndex: 2, fontFamily: "var(--font-mono)", fontSize: 11, color: "#fff", background: C.accent, padding: "2px 8px", borderRadius: 6 }}>✓ SOLVED</span>}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span style={{ width: 34, height: 34, borderRadius: 9, background: `${cat.c}14`, display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: 14, color: cat.c }}>{cat.glyph}</span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 10.5, color: cat.c }}>{cat.name}</span>
